@@ -511,7 +511,7 @@ const projectsData = [
       "Designed and implemented microservices-based ride hailing system using Kafka, Redis, MongoDB, MySQL, and XGBoost for dynamic pricing on Kaggle ride data.",
     fullDescription:
       "Designed and implemented a microservices-based ride-hailing system using Node.js, Kafka, Redis, MongoDB, MySQL, and XGBoost for dynamic pricing on Kaggle ride data. Deployed containerized services on AWS using Docker and Kubernetes, with Kafka for messaging, Redis for caching, and load testing via JMeter on 10K+ records. Architected modular microservices for drivers, customers, billing, and rides, enabling scalability and fault tolerance.",
-    image: "/ride-hailing-app.png",
+  image: "/Resume/ride-hailing-app.png",
     techStack: [
       "Node.js",
       "Express",
@@ -540,7 +540,7 @@ const projectsData = [
       "Integrated GPT API with FinBERT to auto-generate market insights, cutting analysis time by 70% and improving accuracy by 15%.",
     fullDescription:
       "Integrated GPT API with FinBERT to auto-generate market insights, cutting analysis time by 70% and improving accuracy by 15%. Built a time-decay sentiment model, increasing prediction relevance by 25% over baseline. Developed a PyTorch pipeline combining FinBERT sentiment and technical indicators for trend forecasting.",
-    image: "/financial-dashboard.png",
+  image: "/Resume/financial-dashboard.png",
     techStack: ["FinBERT", "PyTorch", "Transformers", "Streamlit", "Python"],
     githubLink: "https://github.com/deveshs18/Sentimental_stock_predictor",
     achievements: [
@@ -557,7 +557,7 @@ const projectsData = [
       "Engineered a Kafka-Spark NLP pipeline handling 1,200+ tweets/hour, with PostgreSQL and Grafana for live trend tracking.",
     fullDescription:
       "Engineered a Kafka-Spark NLP pipeline handling 1,200+ tweets/hour, with PostgreSQL and Grafana for live trend tracking. Applied Bloom Filter, Flajolet-Martin, and Count-Min Sketch for efficient deduplication, interaction estimation, and frequency tracking in high-velocity data streams. Integrated NLTK and spaCy for sentiment and entity recognition, delivering high-quality insights and enabling seamless collaboration.",
-    image: "/social-media-analytics-dashboard.png",
+  image: "/Resume/social-media-analytics-dashboard.png",
     techStack: ["Kafka", "Apache Spark", "PySpark", "Twitter API", "PostgreSQL", "Grafana", "NLTK", "spaCy"],
     githubLink: "https://github.com/deveshs18/Trend_Analysis_BigData",
     achievements: [
