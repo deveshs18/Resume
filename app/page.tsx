@@ -7,7 +7,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import { Html, Environment } from "@react-three/drei"
 import type * as THREE from "three"
 import { Button } from "@/components/ui/button"
-import { Mail, Phone, Linkedin, ExternalLink, Menu, X, Calendar, ChevronDown } from "lucide-react"
+import { Mail, Phone, Linkedin, Menu, X, Calendar, ChevronDown } from "lucide-react"
 
 function useMousePosition() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
@@ -503,114 +503,211 @@ function SkillsStickFigure({ position, scale }) {
   )
 }
 
+const projectsData = [
+  {
+    id: 1,
+    title: "UBER Simulation – Distributed Systems Project",
+    shortDescription:
+      "Designed and implemented microservices-based ride hailing system using Kafka, Redis, MongoDB, MySQL, and XGBoost for dynamic pricing on Kaggle ride data.",
+    fullDescription:
+      "Designed and implemented a microservices-based ride-hailing system using Node.js, Kafka, Redis, MongoDB, MySQL, and XGBoost for dynamic pricing on Kaggle ride data. Deployed containerized services on AWS using Docker and Kubernetes, with Kafka for messaging, Redis for caching, and load testing via JMeter on 10K+ records. Architected modular microservices for drivers, customers, billing, and rides, enabling scalability and fault tolerance.",
+    image: "/ride-hailing-app.png",
+    techStack: [
+      "Node.js",
+      "Express",
+      "MongoDB",
+      "Kafka",
+      "Redis",
+      "Docker",
+      "Kubernetes",
+      "AWS",
+      "JMeter",
+      "XGBoost",
+      "JavaScript",
+    ],
+    githubLink: "https://github.com/deveshs18/UBER",
+    achievements: [
+      "Deployed containerized services on AWS using Docker and Kubernetes",
+      "Implemented Kafka for messaging and Redis for caching",
+      "Load tested via JMeter on 10K+ records",
+      "Architected modular microservices for scalability and fault tolerance",
+    ],
+  },
+  {
+    id: 2,
+    title: "Sentimental Stock Prediction using GenAI",
+    shortDescription:
+      "Integrated GPT API with FinBERT to auto-generate market insights, cutting analysis time by 70% and improving accuracy by 15%.",
+    fullDescription:
+      "Integrated GPT API with FinBERT to auto-generate market insights, cutting analysis time by 70% and improving accuracy by 15%. Built a time-decay sentiment model, increasing prediction relevance by 25% over baseline. Developed a PyTorch pipeline combining FinBERT sentiment and technical indicators for trend forecasting.",
+    image: "/financial-dashboard.png",
+    techStack: ["FinBERT", "PyTorch", "Transformers", "Streamlit", "Python"],
+    githubLink: "https://github.com/deveshs18/Sentimental_stock_predictor",
+    achievements: [
+      "Cut analysis time by 70% and improved accuracy by 15%",
+      "Built time-decay sentiment model with 25% better prediction relevance",
+      "Developed PyTorch pipeline combining sentiment and technical indicators",
+      "Integrated GPT API for automated market insights generation",
+    ],
+  },
+  {
+    id: 3,
+    title: "Sentiment & Lingo Trend Analysis",
+    shortDescription:
+      "Engineered a Kafka-Spark NLP pipeline handling 1,200+ tweets/hour, with PostgreSQL and Grafana for live trend tracking.",
+    fullDescription:
+      "Engineered a Kafka-Spark NLP pipeline handling 1,200+ tweets/hour, with PostgreSQL and Grafana for live trend tracking. Applied Bloom Filter, Flajolet-Martin, and Count-Min Sketch for efficient deduplication, interaction estimation, and frequency tracking in high-velocity data streams. Integrated NLTK and spaCy for sentiment and entity recognition, delivering high-quality insights and enabling seamless collaboration.",
+    image: "/social-media-analytics-dashboard.png",
+    techStack: ["Kafka", "Apache Spark", "PySpark", "Twitter API", "PostgreSQL", "Grafana", "NLTK", "spaCy"],
+    githubLink: "https://github.com/deveshs18/Trend_Analysis_BigData",
+    achievements: [
+      "Handled 1,200+ tweets/hour with real-time processing",
+      "Applied advanced algorithms for efficient data stream processing",
+      "Integrated NLTK and spaCy for sentiment and entity recognition",
+      "Built live trend tracking with PostgreSQL and Grafana",
+    ],
+  },
+]
+
 // Projects Section Component
 function ProjectsSection() {
+  const [selectedProject, setSelectedProject] = useState<number | null>(null)
+
+  const openProjectDetails = (projectId: number) => {
+    setSelectedProject(projectId)
+  }
+
+  const closeProjectDetails = () => {
+    setSelectedProject(null)
+  }
+
   return (
     <section id="projects" className="min-h-screen bg-white text-black py-20 relative">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-        {/* Project 1 */}
-        <div className="bg-gray-50 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
-          <div className="h-48 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-            <img src="/ride-hailing-app.png" alt="Uber Simulation" className="w-full h-full object-cover" />
-          </div>
-          <div className="p-6">
-            <h3 className="text-xl font-bold mb-3">Uber Simulation – Distributed Systems Project</h3>
-            <p className="text-gray-600 mb-4 text-sm">
-              Designed and implemented microservices-based ride hailing system using Kafka, Redis, MongoDB, MySQL, and
-              XGBoost for dynamic pricing on Kaggle ride data.
-            </p>
-            <div className="flex flex-wrap gap-2 mb-4">
-              {["Node.js", "Express", "MongoDB", "Kafka", "+5 more"].map((tech) => (
-                <span key={tech} className="px-2 py-1 bg-black text-white text-xs rounded-full">
-                  {tech}
-                </span>
-              ))}
+        {projectsData.map((project) => (
+          <div
+            key={project.id}
+            className="bg-gray-50 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
+          >
+            <div className="h-48 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+              <img
+                src={project.image || "/placeholder.svg"}
+                alt={project.title}
+                className="w-full h-full object-cover"
+              />
             </div>
-            <div className="flex gap-2">
-              <Button size="sm" className="bg-black text-white hover:bg-gray-800">
-                View Details
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                className="border-black text-black hover:bg-black hover:text-white bg-transparent"
-              >
-                Code
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        {/* Project 2 */}
-        <div className="bg-gray-50 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
-          <div className="h-48 bg-gradient-to-br from-green-500 to-blue-600 flex items-center justify-center">
-            <img src="/financial-dashboard.png" alt="Stock Prediction" className="w-full h-full object-cover" />
-          </div>
-          <div className="p-6">
-            <h3 className="text-xl font-bold mb-3">Sentimental Stock Prediction using GenAI</h3>
-            <p className="text-gray-600 mb-4 text-sm">
-              Integrated GPT API with FinBERT to auto-generate market insights, cutting analysis time by 70% and
-              improving accuracy by 15%.
-            </p>
-            <div className="flex flex-wrap gap-2 mb-4">
-              {["Python", "FinBERT", "PyTorch", "Transformers", "+2 more"].map((tech) => (
-                <span key={tech} className="px-2 py-1 bg-black text-white text-xs rounded-full">
-                  {tech}
-                </span>
-              ))}
-            </div>
-            <div className="flex gap-2">
-              <Button size="sm" className="bg-black text-white hover:bg-gray-800">
-                View Details
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                className="border-black text-black hover:bg-black hover:text-white bg-transparent"
-              >
-                Code
-              </Button>
+            <div className="p-6">
+              <h3 className="text-xl font-bold mb-3">{project.title}</h3>
+              <p className="text-gray-600 mb-4 text-sm">{project.shortDescription}</p>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {project.techStack.slice(0, 4).map((tech) => (
+                  <span key={tech} className="px-2 py-1 bg-black text-white text-xs rounded-full">
+                    {tech}
+                  </span>
+                ))}
+                {project.techStack.length > 4 && (
+                  <span className="px-2 py-1 bg-black text-white text-xs rounded-full">
+                    +{project.techStack.length - 4} more
+                  </span>
+                )}
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  className="bg-black text-white hover:bg-gray-800"
+                  onClick={() => openProjectDetails(project.id)}
+                >
+                  View Details
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="border-black text-black hover:bg-black hover:text-white bg-transparent"
+                  onClick={() => window.open(project.githubLink, "_blank")}
+                >
+                  Code
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-
-        {/* Project 3 */}
-        <div className="bg-gray-50 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
-          <div className="h-48 bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
-            <img
-              src="/social-media-analytics-dashboard.png"
-              alt="Sentiment Analysis"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div className="p-6">
-            <h3 className="text-xl font-bold mb-3">Sentiment & Lingo Trend Analysis</h3>
-            <p className="text-gray-600 mb-4 text-sm">
-              Engineered a Kafka-Spark NLP pipeline handling 1,200+ tweets/hour, with PostgreSQL and Grafana for live
-              trend tracking.
-            </p>
-            <div className="flex flex-wrap gap-2 mb-4">
-              {["Kafka", "Apache Spark", "PySpark", "Twitter API", "+4 more"].map((tech) => (
-                <span key={tech} className="px-2 py-1 bg-black text-white text-xs rounded-full">
-                  {tech}
-                </span>
-              ))}
-            </div>
-            <div className="flex gap-2">
-              <Button size="sm" className="bg-black text-white hover:bg-gray-800">
-                View Details
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                className="border-black text-black hover:bg-black hover:text-white bg-transparent"
-              >
-                Code
-              </Button>
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
+
+      {selectedProject && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              {(() => {
+                const project = projectsData.find((p) => p.id === selectedProject)
+                if (!project) return null
+
+                return (
+                  <>
+                    <div className="flex justify-between items-start mb-6">
+                      <h2 className="text-2xl font-bold text-black">{project.title}</h2>
+                      <button onClick={closeProjectDetails} className="text-gray-500 hover:text-black text-2xl">
+                        ×
+                      </button>
+                    </div>
+
+                    <div className="mb-6">
+                      <img
+                        src={project.image || "/placeholder.svg"}
+                        alt={project.title}
+                        className="w-full h-64 object-cover rounded-lg"
+                      />
+                    </div>
+
+                    <div className="mb-6">
+                      <h3 className="text-lg font-semibold mb-3">Project Overview</h3>
+                      <p className="text-gray-700 leading-relaxed">{project.fullDescription}</p>
+                    </div>
+
+                    <div className="mb-6">
+                      <h3 className="text-lg font-semibold mb-3">Key Achievements</h3>
+                      <ul className="space-y-2">
+                        {project.achievements.map((achievement, index) => (
+                          <li key={index} className="flex items-start">
+                            <span className="text-black mr-2">•</span>
+                            <span className="text-gray-700">{achievement}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="mb-6">
+                      <h3 className="text-lg font-semibold mb-3">Technology Stack</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {project.techStack.map((tech) => (
+                          <span key={tech} className="px-3 py-1 bg-black text-white text-sm rounded-full">
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="flex gap-4">
+                      <Button
+                        className="bg-black text-white hover:bg-gray-800"
+                        onClick={() => window.open(project.githubLink, "_blank")}
+                      >
+                        View on GitHub
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="border-black text-black hover:bg-black hover:text-white bg-transparent"
+                        onClick={closeProjectDetails}
+                      >
+                        Close
+                      </Button>
+                    </div>
+                  </>
+                )
+              })()}
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="text-center">
         <Button size="lg" className="bg-black text-white hover:bg-gray-800 px-8">
@@ -892,25 +989,20 @@ function ContactSection() {
                 </div>
               </div>
 
-              <div className="flex items-center space-x-4 p-6 bg-gray-900 rounded-xl hover:bg-gray-800 transition-all duration-300 hover:scale-105">
+              <a
+                href="https://www.linkedin.com/in/devesh-singh-9998a6199"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center space-x-4 p-6 bg-gray-900 rounded-xl hover:bg-gray-800 transition-all duration-300 hover:scale-105"
+              >
                 <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center">
                   <Linkedin className="w-7 h-7 text-black" />
                 </div>
                 <div>
                   <h4 className="font-semibold text-lg">LinkedIn</h4>
-                  <p className="text-gray-400">LinkedIn Profile</p>
+                  <p className="text-gray-400">Connect with me</p>
                 </div>
-              </div>
-
-              <div className="flex items-center space-x-4 p-6 bg-gray-900 rounded-xl hover:bg-gray-800 transition-all duration-300 hover:scale-105">
-                <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center">
-                  <ExternalLink className="w-7 h-7 text-black" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-lg">Portfolio</h4>
-                  <p className="text-gray-400">Portfolio Website</p>
-                </div>
-              </div>
+              </a>
             </div>
 
             <div className="relative h-64 mt-8">
