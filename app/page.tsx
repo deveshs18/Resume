@@ -601,7 +601,7 @@ const projectsData = [
       "A framework for querying relational databases using natural language, benchmarking local LLMs vs APIs with Schema-RAG and SQL auto-correction.",
     fullDescription:
       "Built a comprehensive evaluation and deployment framework for Text-to-SQL systems. The framework benchmarks open-source local LLMs (Qwen) vs commercial APIs (GPT-4o) under controlled prompting and schema retrieval settings. Designed a modular pipeline featuring Schema-RAG, model-aware prompt builder, SQL validation/repair layer, and an execution harness with metrics like Execution Accuracy (EX) and Semantic Similarity.",
-    image: "/text-to-sql.png",
+    image: "/Resume/text-to-sql.png",
     techStack: [
       "Python",
       "SQLite",
@@ -628,7 +628,7 @@ const projectsData = [
       "An end-to-end deep learning pipeline generating structured MIDI from lyrics using emotion alignment and Transformer-based modeling.",
     fullDescription:
       "Lyric2Music is a 4-stage modular AI pipeline: Emotion Detection (DistilBERT) → Control Mapping (MLP) → Music Generation (Transformer) → Emotion Verification. Developed a custom Structured REMI tokenizer and trained a multi-task Transformer on 16,000+ MIDI files to ensure harmonic coherence and rhythmic alignment.",
-    image: "/lyrics-to-music.png",
+    image: "/Resume/lyrics-to-music.png",
     techStack: [
       "PyTorch",
       "Transformers",
@@ -789,11 +789,7 @@ function ProjectsSection() {
         </div>
       )}
 
-      <div className="text-center">
-        <Button size="lg" className="bg-black text-white hover:bg-gray-800 px-8">
-          View All Projects
-        </Button>
-      </div>
+
     </section>
   )
 }
