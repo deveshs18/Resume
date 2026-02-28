@@ -59,11 +59,10 @@ function Navigation({
               <button
                 key={section.id}
                 onClick={() => scrollToSection(section.id)}
-                className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
-                  activeSection === section.id
-                    ? "text-primary bg-primary/10 border-b-2 border-primary"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                }`}
+                className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${activeSection === section.id
+                  ? "text-primary bg-primary/10 border-b-2 border-primary"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  }`}
               >
                 {section.label}
               </button>
@@ -88,11 +87,10 @@ function Navigation({
                   scrollToSection(section.id)
                   setIsOpen(false)
                 }}
-                className={`block w-full text-left px-4 py-3 text-sm font-medium transition-colors rounded-md mx-2 mb-1 ${
-                  activeSection === section.id
-                    ? "text-primary bg-primary/10"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                }`}
+                className={`block w-full text-left px-4 py-3 text-sm font-medium transition-colors rounded-md mx-2 mb-1 ${activeSection === section.id
+                  ? "text-primary bg-primary/10"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  }`}
               >
                 {section.label}
               </button>
@@ -366,6 +364,10 @@ function SkillsSection() {
               "FinBERT",
               "spaCy",
               "NLTK",
+              "Transformers",
+              "LangChain",
+              "QLoRA",
+              "CUDA",
             ].map((framework) => (
               <span
                 key={framework}
@@ -375,6 +377,31 @@ function SkillsSection() {
               </span>
             ))}
           </div>
+        </div>
+      </div>
+
+      {/* AI & Data Science (New Category) */}
+      <div className="bg-gray-900 p-8 rounded-lg hover:bg-gray-800 transition-all duration-300 mb-12">
+        <h3 className="text-2xl font-bold mb-6 text-white">AI & Data Science</h3>
+        <div className="flex flex-wrap gap-3">
+          {[
+            "Large Language Models (LLMs)",
+            "Retrieval-Augmented Generation (RAG)",
+            "Generative AI",
+            "Fine-Tuning",
+            "Prompt Engineering",
+            "Symbolic AI",
+            "Natural Language Processing (NLP)",
+            "Sequence Modeling",
+            "Computer Vision (CNNs)",
+          ].map((skill) => (
+            <span
+              key={skill}
+              className="px-4 py-2 bg-white text-black text-lg font-medium rounded-full hover:bg-gray-200 transition-colors transform hover:scale-105"
+            >
+              {skill}
+            </span>
+          ))}
         </div>
       </div>
 
@@ -511,7 +538,7 @@ const projectsData = [
       "Designed and implemented microservices-based ride hailing system using Kafka, Redis, MongoDB, MySQL, and XGBoost for dynamic pricing on Kaggle ride data.",
     fullDescription:
       "Designed and implemented a microservices-based ride-hailing system using Node.js, Kafka, Redis, MongoDB, MySQL, and XGBoost for dynamic pricing on Kaggle ride data. Deployed containerized services on AWS using Docker and Kubernetes, with Kafka for messaging, Redis for caching, and load testing via JMeter on 10K+ records. Architected modular microservices for drivers, customers, billing, and rides, enabling scalability and fault tolerance.",
-  image: "/Resume/ride-hailing-app.png",
+    image: "/Resume/ride-hailing-app.png",
     techStack: [
       "Node.js",
       "Express",
@@ -540,7 +567,7 @@ const projectsData = [
       "Integrated GPT API with FinBERT to auto-generate market insights, cutting analysis time by 70% and improving accuracy by 15%.",
     fullDescription:
       "Integrated GPT API with FinBERT to auto-generate market insights, cutting analysis time by 70% and improving accuracy by 15%. Built a time-decay sentiment model, increasing prediction relevance by 25% over baseline. Developed a PyTorch pipeline combining FinBERT sentiment and technical indicators for trend forecasting.",
-  image: "/Resume/financial-dashboard.png",
+    image: "/Resume/financial-dashboard.png",
     techStack: ["FinBERT", "PyTorch", "Transformers", "Streamlit", "Python"],
     githubLink: "https://github.com/deveshs18/Sentimental_stock_predictor",
     achievements: [
@@ -557,7 +584,7 @@ const projectsData = [
       "Engineered a Kafka-Spark NLP pipeline handling 1,200+ tweets/hour, with PostgreSQL and Grafana for live trend tracking.",
     fullDescription:
       "Engineered a Kafka-Spark NLP pipeline handling 1,200+ tweets/hour, with PostgreSQL and Grafana for live trend tracking. Applied Bloom Filter, Flajolet-Martin, and Count-Min Sketch for efficient deduplication, interaction estimation, and frequency tracking in high-velocity data streams. Integrated NLTK and spaCy for sentiment and entity recognition, delivering high-quality insights and enabling seamless collaboration.",
-  image: "/Resume/social-media-analytics-dashboard.png",
+    image: "/Resume/social-media-analytics-dashboard.png",
     techStack: ["Kafka", "Apache Spark", "PySpark", "Twitter API", "PostgreSQL", "Grafana", "NLTK", "spaCy"],
     githubLink: "https://github.com/deveshs18/Trend_Analysis_BigData",
     achievements: [
@@ -565,6 +592,59 @@ const projectsData = [
       "Applied advanced algorithms for efficient data stream processing",
       "Integrated NLTK and spaCy for sentiment and entity recognition",
       "Built live trend tracking with PostgreSQL and Grafana",
+    ],
+  },
+  {
+    id: 4,
+    title: "Text-to-SQL (LLM + RAG)",
+    shortDescription:
+      "A framework for querying relational databases using natural language, benchmarking local LLMs vs APIs with Schema-RAG and SQL auto-correction.",
+    fullDescription:
+      "Built a comprehensive evaluation and deployment framework for Text-to-SQL systems. The framework benchmarks open-source local LLMs (Qwen) vs commercial APIs (GPT-4o) under controlled prompting and schema retrieval settings. Designed a modular pipeline featuring Schema-RAG, model-aware prompt builder, SQL validation/repair layer, and an execution harness with metrics like Execution Accuracy (EX) and Semantic Similarity.",
+    image: "/text-to-sql.png",
+    techStack: [
+      "Python",
+      "SQLite",
+      "HuggingFace",
+      "Transformers",
+      "QLoRA",
+      "OpenAI API",
+      "RAG",
+      "LLMs",
+      "SQLAlchemy",
+    ],
+    githubLink: "https://github.com/deveshs18/Text-To-SQL",
+    achievements: [
+      "Up to +38.6% Execution Accuracy improvement with Schema-RAG grounding",
+      "Benchmarked 4 models across 4 prompting strategies (Few-Shot, CoT, etc.)",
+      "Implemented a lightweight SQL auto-correction layer for noisy LLM outputs",
+      "Fine-tuned Qwen 0.5B using QLoRA for improved executability",
+    ],
+  },
+  {
+    id: 5,
+    title: "Lyrics2Music – AI Music Generation",
+    shortDescription:
+      "An end-to-end deep learning pipeline generating structured MIDI from lyrics using emotion alignment and Transformer-based modeling.",
+    fullDescription:
+      "Lyric2Music is a 4-stage modular AI pipeline: Emotion Detection (DistilBERT) → Control Mapping (MLP) → Music Generation (Transformer) → Emotion Verification. Developed a custom Structured REMI tokenizer and trained a multi-task Transformer on 16,000+ MIDI files to ensure harmonic coherence and rhythmic alignment.",
+    image: "/lyrics-to-music.png",
+    techStack: [
+      "PyTorch",
+      "Transformers",
+      "DistilBERT",
+      "CUDA",
+      "MIDI",
+      "Python",
+      "CNN",
+      "NumPy",
+    ],
+    githubLink: "https://github.com/deveshs18/Lyrics2Music",
+    achievements: [
+      "Achieved 100% triadic chord coherence in generated MIDI output",
+      "Designed a custom ~600-token Structured REMI vocabulary for music",
+      "Fine-tuned DistilBERT for regression-based valence-arousal extraction",
+      "Trained on 16K+ MIDI files with chord-aware multi-task learning",
     ],
   },
 ]
@@ -1074,6 +1154,20 @@ function ContactSection() {
 // Experience Section Component
 function FullExperienceSection() {
   const experiences = [
+    {
+      title: "Instructional Student Assistant — Deep Learning",
+      company: "San José State University",
+      period: "Jan 2025 – Present",
+      location: "San José, CA",
+      achievements: [
+        "Supported students in CNN/Transformer labs by resolving conceptual and implementation questions across training pipelines, evaluation, and deployment",
+        "Led lab assistance for image classification tasks: dataset handling, training loops, tuning for accuracy, confusion-matrix/error analysis, and report-quality evaluation",
+        "Assisted super-resolution labs by debugging model input/output pipelines, loss selection, and quality validation",
+        "Configured and operationalized the Mobilint MLA100 NPU lab setup, enabling students to run optimized inference and understand accelerator constraints",
+        "Troubleshot NPU deployment issues including model compatibility, runtime errors, and performance bottlenecks; helped students achieve stable inference runs on MLA100",
+      ],
+      technologies: ["CNN", "Transformers", "NPU", "Mobilint MLA100", "Deep Learning", "Python", "PyTorch"],
+    },
     {
       title: "Software Development Intern",
       company: "ASANTE Inc.",
