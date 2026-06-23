@@ -89,7 +89,7 @@ export const LampContainer = ({
 
       <div
         className={cn(
-          "relative z-50 flex flex-1 flex-col items-center justify-center gap-4 px-5 pb-6 pt-2 md:gap-5 md:pb-8",
+          "relative z-50 flex flex-1 flex-col items-center justify-center gap-3 px-4 pb-5 pt-2 sm:gap-4 sm:px-5 sm:pb-6 md:gap-5 md:pb-8",
           !embedded && "-translate-y-80",
         )}
       >

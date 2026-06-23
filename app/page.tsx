@@ -49,16 +49,42 @@ function Navigation({
   const activeIndex = NAV_SECTIONS.findIndex((section) => section.id === activeSection)
 
   return (
-    <nav className="fixed left-0 right-0 top-0 z-50 border-b border-cyan-500/20 bg-black/80 backdrop-blur-md">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
+    <nav className="fixed left-0 right-0 top-0 z-50 border-b border-cyan-500/20 bg-black/90 backdrop-blur-md">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-3 py-2.5 sm:gap-3 sm:px-4 sm:py-3 lg:px-8">
         <button
           type="button"
           onClick={() => scrollToSection("home")}
-          className="shrink-0 bg-gradient-to-r from-cyan-400 to-sky-300 bg-clip-text text-sm font-bold tracking-tight text-transparent sm:text-base md:text-lg"
+          className="shrink-0 bg-gradient-to-r from-cyan-400 to-sky-300 bg-clip-text text-xs font-bold tracking-tight text-transparent sm:text-sm md:text-lg"
         >
-          DEVESH SINGH
+          <span className="sm:hidden">DS</span>
+          <span className="hidden sm:inline">DEVESH SINGH</span>
         </button>
 
+        {/* Mobile: compact icon-only nav — single row, no wrapping */}
+        <div className="flex flex-nowrap items-center gap-0.5 rounded-xl border border-cyan-500/30 bg-black/90 p-0.5 sm:hidden">
+          {NAV_SECTIONS.map((section, index) => {
+            const Icon = section.icon
+            const isActive = activeIndex === index
+            return (
+              <button
+                key={section.id}
+                type="button"
+                aria-label={section.label}
+                onClick={() => scrollToSection(section.id)}
+                className={cn(
+                  "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors",
+                  isActive
+                    ? "bg-cyan-500/15 text-cyan-400"
+                    : "text-neutral-400 hover:bg-cyan-500/10 hover:text-cyan-300",
+                )}
+              >
+                <Icon className="h-4 w-4" />
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Desktop: expandable tabs with labels */}
         <ExpandableTabs
           tabs={NAV_SECTIONS.map((section) => ({
             title: section.label,
@@ -73,7 +99,7 @@ function Navigation({
           dismissOnClickOutside={false}
           activeColor="text-cyan-400"
           selectedClassName="border border-cyan-500/40 bg-cyan-500/10 shadow-[0_0_16px_rgba(34,211,238,0.35)]"
-          className="max-w-full border-cyan-500/40 bg-black/90 shadow-[0_0_24px_rgba(34,211,238,0.15)] backdrop-blur-sm"
+          className="hidden shrink-0 border-cyan-500/40 bg-black/90 shadow-[0_0_24px_rgba(34,211,238,0.15)] backdrop-blur-sm sm:flex"
         />
       </div>
     </nav>
@@ -83,14 +109,14 @@ function Navigation({
 // Hero Section Component
 function HeroSection() {
   return (
-    <section id="home" className="scroll-mt-20 overflow-hidden bg-black text-white">
+    <section id="home" className="scroll-mt-20 overflow-x-hidden bg-black pt-14 text-white sm:pt-0 sm:overflow-hidden">
       <ContainerScroll
         titleComponent={
           <>
             <AnimatedText
               text="DEVESH SINGH"
-              className="py-0"
-              textClassName="text-[2rem] font-bold leading-tight sm:text-[2.75rem] md:text-[4rem] lg:text-[5rem]"
+              className="py-1"
+              textClassName="text-[1.75rem] font-bold leading-tight sm:text-[2.75rem] md:text-[4rem] lg:text-[5rem]"
               gradientColors="linear-gradient(90deg, #0891b2, #e2e8f0, #22d3ee, #ffffff, #0891b2)"
               gradientAnimationDuration={4}
               hoverEffect
@@ -102,7 +128,7 @@ function HeroSection() {
         }
       >
         <LampContainer embedded className="h-full">
-          <div className="relative z-20 max-w-xl space-y-4 text-center text-sm leading-relaxed text-slate-300 md:max-w-2xl md:text-base">
+          <div className="relative z-20 max-w-xl space-y-3 px-2 text-center text-xs leading-relaxed text-slate-300 sm:space-y-4 sm:px-0 sm:text-sm md:max-w-2xl md:text-base">
             <p>
               I&apos;m passionate about technology and constantly push myself to stay current across full-stack
               development, data engineering, and AI engineering. I enjoy building scalable systems, experimenting with
@@ -130,10 +156,10 @@ function HeroSection() {
             <div className="absolute inset-0 h-full w-full bg-slate-950 [mask-image:radial-gradient(240px_100px_at_top,transparent_20%,white)]" />
           </div>
 
-          <div className="relative z-20 flex flex-col gap-3 sm:flex-row">
+          <div className="relative z-20 flex w-full max-w-md flex-col gap-3 px-2 sm:flex-row sm:px-0">
             <Button
               size="lg"
-              className="bg-cyan-500 text-black hover:bg-cyan-400"
+              className="w-full bg-cyan-500 text-black hover:bg-cyan-400 sm:w-auto"
               onClick={() => document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" })}
             >
               View My Work
@@ -141,7 +167,7 @@ function HeroSection() {
             <Button
               size="lg"
               variant="outline"
-              className="border-cyan-500/50 bg-transparent text-white hover:bg-cyan-500/10"
+              className="w-full border-cyan-500/50 bg-transparent text-white hover:bg-cyan-500/10 sm:w-auto"
               onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
             >
               Get In Touch
@@ -255,7 +281,7 @@ function ExpandedExperienceCard({
         </div>
       </div>
 
-      <div className="max-h-[380px] overflow-y-auto px-5 py-5 md:max-h-[420px] md:px-6 md:py-6">
+      <div className="max-h-[min(380px,50vh)] overflow-y-auto px-4 py-4 sm:max-h-[420px] sm:px-5 sm:py-5 md:px-6 md:py-6">
         <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-cyan-300/80">
           Key contributions
         </h4>
@@ -290,38 +316,38 @@ function ExpandedExperienceCard({
 
 function ContactSection() {
   return (
-    <section id="contact" className="relative min-h-screen scroll-mt-20 overflow-hidden bg-black py-16 text-white md:py-24">
+    <section id="contact" className="relative scroll-mt-20 overflow-hidden bg-black py-12 text-white sm:py-16 md:py-24">
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-1/4 top-0 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl" />
         <div className="absolute bottom-0 right-1/4 h-64 w-64 rounded-full bg-sky-500/10 blur-3xl" />
       </div>
 
-      <div className="relative z-10 container mx-auto px-6">
-        <div className="mb-16 text-center">
-          <h2 className="mb-4 bg-gradient-to-r from-cyan-300 via-white to-cyan-400 bg-clip-text text-4xl font-bold tracking-tight text-transparent md:text-6xl">
+      <div className="relative z-10 container mx-auto px-4 sm:px-6">
+        <div className="mb-10 text-center sm:mb-16">
+          <h2 className="mb-3 bg-gradient-to-r from-cyan-300 via-white to-cyan-400 bg-clip-text text-3xl font-bold tracking-tight text-transparent sm:mb-4 sm:text-4xl md:text-6xl">
             Let&apos;s Connect
           </h2>
-          <p className="text-xl font-light text-zinc-300 md:text-2xl">
+          <p className="text-base font-light text-zinc-300 sm:text-xl md:text-2xl">
             Ready to collaborate on your next project?
           </p>
         </div>
 
-        <div className="mx-auto grid max-w-6xl grid-cols-1 items-stretch gap-8 lg:grid-cols-2 lg:gap-12">
-          <ContactInfoPanel className="min-h-[420px] lg:min-h-[520px]">
-            <div className="flex h-full flex-col justify-center p-8 md:p-10">
-              <h3 className="mb-8 text-3xl font-bold tracking-tight text-white">Get in Touch</h3>
+        <div className="mx-auto grid max-w-6xl grid-cols-1 items-stretch gap-6 sm:gap-8 lg:grid-cols-2 lg:gap-12">
+          <ContactInfoPanel className="min-h-0 lg:min-h-[520px]">
+            <div className="flex h-full flex-col justify-center p-5 sm:p-8 md:p-10">
+              <h3 className="mb-6 text-2xl font-bold tracking-tight text-white sm:mb-8 sm:text-3xl">Get in Touch</h3>
 
-              <div className="space-y-5">
+              <div className="space-y-4 sm:space-y-5">
                 <a
                   href="mailto:deveshs2015@gmail.com"
-                  className="group flex items-center gap-4 rounded-xl border border-zinc-700/80 bg-black/50 p-5 transition-all duration-300 hover:border-cyan-500/30 hover:bg-black/70"
+                  className="group flex items-center gap-3 rounded-xl border border-zinc-700/80 bg-black/50 p-4 transition-all duration-300 hover:border-cyan-500/30 hover:bg-black/70 sm:gap-4 sm:p-5"
                 >
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-cyan-500/30 bg-cyan-500/10">
-                    <Mail className="h-5 w-5 text-cyan-400" />
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-cyan-500/30 bg-cyan-500/10 sm:h-12 sm:w-12">
+                    <Mail className="h-4 w-4 text-cyan-400 sm:h-5 sm:w-5" />
                   </div>
-                  <div>
-                    <h4 className="text-lg font-semibold text-white">Email</h4>
-                    <p className="text-zinc-300 transition-colors group-hover:text-cyan-200/90">
+                  <div className="min-w-0">
+                    <h4 className="text-base font-semibold text-white sm:text-lg">Email</h4>
+                    <p className="break-all text-sm text-zinc-300 transition-colors group-hover:text-cyan-200/90 sm:text-base">
                       deveshs2015@gmail.com
                     </p>
                   </div>
@@ -331,14 +357,14 @@ function ContactSection() {
                   href="https://www.linkedin.com/in/devesh-singh-9998a6199"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex items-center gap-4 rounded-xl border border-zinc-700/80 bg-black/50 p-5 transition-all duration-300 hover:border-cyan-500/30 hover:bg-black/70"
+                  className="group flex items-center gap-3 rounded-xl border border-zinc-700/80 bg-black/50 p-4 transition-all duration-300 hover:border-cyan-500/30 hover:bg-black/70 sm:gap-4 sm:p-5"
                 >
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-cyan-500/30 bg-cyan-500/10">
-                    <Linkedin className="h-5 w-5 text-cyan-400" />
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-cyan-500/30 bg-cyan-500/10 sm:h-12 sm:w-12">
+                    <Linkedin className="h-4 w-4 text-cyan-400 sm:h-5 sm:w-5" />
                   </div>
-                  <div>
-                    <h4 className="text-lg font-semibold text-white">LinkedIn</h4>
-                    <p className="text-zinc-300 transition-colors group-hover:text-cyan-200/90">
+                  <div className="min-w-0">
+                    <h4 className="text-base font-semibold text-white sm:text-lg">LinkedIn</h4>
+                    <p className="text-sm text-zinc-300 transition-colors group-hover:text-cyan-200/90 sm:text-base">
                       Connect with me
                     </p>
                   </div>
@@ -347,16 +373,16 @@ function ContactSection() {
             </div>
           </ContactInfoPanel>
 
-          <SectionGlassPanel variant="accent" className="min-h-[420px] lg:min-h-[520px]">
+          <SectionGlassPanel variant="accent" className="min-h-[280px] sm:min-h-[360px] lg:min-h-[520px]">
             <SplineScene
               scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
-              className="h-full min-h-[420px] w-full lg:min-h-[520px]"
+              className="h-full min-h-[280px] w-full sm:min-h-[360px] lg:min-h-[520px]"
             />
           </SectionGlassPanel>
         </div>
 
-        <div className="mt-20 border-t border-zinc-700/50 pt-8 text-center">
-          <p className="text-zinc-400">
+        <div className="mt-12 border-t border-zinc-700/50 pt-6 text-center sm:mt-20 sm:pt-8">
+          <p className="px-2 text-sm text-zinc-400 sm:text-base">
             © 2024 Devesh Singh. Built with passion for technology and innovation
           </p>
         </div>
@@ -369,6 +395,7 @@ function ContactSection() {
 function FullExperienceSection() {
   const [activeIndex, setActiveIndex] = useState(0)
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null)
+  const [galleryRadius, setGalleryRadius] = useState(320)
   const galleryItems = EXPERIENCE_DATA.map(experienceToGalleryItem)
   const angleStep = 360 / galleryItems.length
   const rotation = -activeIndex * angleStep
@@ -391,8 +418,22 @@ function FullExperienceSection() {
     setExpandedIndex(null)
   }
 
+  useEffect(() => {
+    const updateRadius = () => {
+      const w = window.innerWidth
+      if (w < 380) setGalleryRadius(155)
+      else if (w < 640) setGalleryRadius(195)
+      else if (w < 1024) setGalleryRadius(260)
+      else setGalleryRadius(320)
+    }
+
+    updateRadius()
+    window.addEventListener("resize", updateRadius)
+    return () => window.removeEventListener("resize", updateRadius)
+  }, [])
+
   return (
-    <section id="experience" className="relative scroll-mt-20 overflow-visible bg-black pt-6 pb-12 md:pt-8 md:pb-16">
+    <section id="experience" className="relative scroll-mt-20 overflow-hidden bg-black pt-6 pb-10 sm:overflow-visible sm:pb-12 md:pt-8 md:pb-16">
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-1/4 top-0 h-48 w-48 rounded-full bg-cyan-500/10 blur-3xl" />
         <div className="absolute bottom-0 right-1/4 h-48 w-48 rounded-full bg-sky-500/10 blur-3xl" />
@@ -400,10 +441,10 @@ function FullExperienceSection() {
 
       <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="mb-6 text-center md:mb-8">
-          <h2 className="mb-2 bg-gradient-to-r from-cyan-300 via-white to-cyan-400 bg-clip-text text-4xl font-bold tracking-tight text-transparent md:text-5xl">
+          <h2 className="mb-2 bg-gradient-to-r from-cyan-300 via-white to-cyan-400 bg-clip-text text-3xl font-bold tracking-tight text-transparent sm:text-4xl md:text-5xl">
             Experience
           </h2>
-          <p className="text-sm font-light text-neutral-400 md:text-base">
+          <p className="px-2 text-xs font-light text-neutral-400 sm:text-sm md:text-base">
             {isExpanded
               ? "Expanded role details"
               : `Use arrows to browse roles · ${activeIndex + 1} of ${galleryItems.length}`}
@@ -412,8 +453,8 @@ function FullExperienceSection() {
 
         <div
           className={cn(
-            "relative mx-auto max-w-4xl overflow-visible transition-all duration-500",
-            isExpanded ? "min-h-[520px] md:min-h-[560px]" : "h-[420px] sm:h-[460px] md:h-[500px]",
+            "relative mx-auto max-w-4xl overflow-hidden transition-all duration-500 sm:overflow-visible",
+            isExpanded ? "min-h-[480px] md:min-h-[560px]" : "h-[340px] sm:h-[400px] md:h-[500px]",
           )}
         >
           <AnimatePresence mode="wait" initial={false}>
@@ -434,7 +475,7 @@ function FullExperienceSection() {
               <div key="gallery" className="relative h-full w-full overflow-visible">
                 <CircularGallery
                   items={galleryItems}
-                  radius={320}
+                  radius={galleryRadius}
                   rotation={rotation}
                   animate
                   scrollDriven={false}
@@ -446,18 +487,18 @@ function FullExperienceSection() {
                   type="button"
                   aria-label="Previous experience"
                   onClick={goToPrevious}
-                  className="absolute left-0 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-cyan-500/40 bg-black/80 text-cyan-400 shadow-[0_0_16px_rgba(34,211,238,0.2)] transition-all hover:border-cyan-400 hover:bg-cyan-500/10 hover:text-white md:left-2 md:h-12 md:w-12"
+                  className="absolute left-1 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-cyan-500/40 bg-black/80 text-cyan-400 shadow-[0_0_16px_rgba(34,211,238,0.2)] transition-all hover:border-cyan-400 hover:bg-cyan-500/10 hover:text-white sm:left-0 sm:h-10 sm:w-10 md:left-2 md:h-12 md:w-12"
                 >
-                  <ChevronLeft className="h-5 w-5 md:h-6 md:w-6" />
+                  <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6" />
                 </button>
 
                 <button
                   type="button"
                   aria-label="Next experience"
                   onClick={goToNext}
-                  className="absolute right-0 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-cyan-500/40 bg-black/80 text-cyan-400 shadow-[0_0_16px_rgba(34,211,238,0.2)] transition-all hover:border-cyan-400 hover:bg-cyan-500/10 hover:text-white md:right-2 md:h-12 md:w-12"
+                  className="absolute right-1 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-cyan-500/40 bg-black/80 text-cyan-400 shadow-[0_0_16px_rgba(34,211,238,0.2)] transition-all hover:border-cyan-400 hover:bg-cyan-500/10 hover:text-white sm:right-0 sm:h-10 sm:w-10 md:right-2 md:h-12 md:w-12"
                 >
-                  <ChevronRight className="h-5 w-5 md:h-6 md:w-6" />
+                  <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6" />
                 </button>
 
                 <div className="absolute bottom-0 left-1/2 z-20 flex -translate-x-1/2 gap-2">
@@ -489,7 +530,7 @@ export default function HomePage() {
   const [activeSection, setActiveSection] = useState("home")
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       <Navigation activeSection={activeSection} setActiveSection={setActiveSection} />
 
       <main>

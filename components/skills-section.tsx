@@ -102,7 +102,7 @@ function SkillEffectVisual({ effect, active }: { effect: SkillEffect; active: bo
     return (
       <div className="relative h-full w-full overflow-hidden bg-gradient-to-b from-slate-900 via-slate-950 to-black">
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="relative h-full w-full scale-[2] sm:scale-[2.2]">
+          <div className="relative h-full w-full scale-[1.35] sm:scale-[1.8] md:scale-[2.2]">
             <Macbook />
           </div>
         </div>
@@ -146,19 +146,27 @@ function SkillStackCard({ item, active }: { item: SkillStackItem; active: boolea
 export function SkillsSection() {
   const [cardWidth, setCardWidth] = useState(300)
   const [cardHeight, setCardHeight] = useState(360)
+  const [spreadDeg, setSpreadDeg] = useState(42)
 
   useEffect(() => {
     const updateSize = () => {
       const w = window.innerWidth
-      if (w < 640) {
+      if (w < 380) {
+        setCardWidth(Math.min(260, w - 40))
+        setCardHeight(300)
+        setSpreadDeg(24)
+      } else if (w < 640) {
         setCardWidth(Math.min(300, w - 48))
-        setCardHeight(340)
+        setCardHeight(320)
+        setSpreadDeg(32)
       } else if (w < 1024) {
         setCardWidth(420)
         setCardHeight(360)
+        setSpreadDeg(38)
       } else {
         setCardWidth(520)
         setCardHeight(380)
+        setSpreadDeg(42)
       }
     }
 
@@ -168,18 +176,18 @@ export function SkillsSection() {
   }, [])
 
   return (
-    <section id="skills" className="relative scroll-mt-20 min-h-screen overflow-hidden bg-black py-16 text-white md:py-24">
+    <section id="skills" className="relative scroll-mt-20 overflow-hidden bg-black py-12 text-white sm:py-16 md:py-24">
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-1/4 top-0 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl" />
         <div className="absolute bottom-0 right-1/4 h-64 w-64 rounded-full bg-sky-500/10 blur-3xl" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-10 text-center md:mb-14">
-          <h2 className="mb-4 bg-gradient-to-r from-cyan-300 via-white to-cyan-400 bg-clip-text text-4xl font-bold tracking-tight text-transparent md:text-6xl">
+        <div className="mb-8 text-center sm:mb-10 md:mb-14">
+          <h2 className="mb-3 bg-gradient-to-r from-cyan-300 via-white to-cyan-400 bg-clip-text text-3xl font-bold tracking-tight text-transparent sm:mb-4 sm:text-4xl md:text-6xl">
             Skills
           </h2>
-          <p className="text-lg font-light text-neutral-400 md:text-xl">
+          <p className="px-2 text-sm font-light text-neutral-400 sm:text-lg md:text-xl">
             Swipe or click cards · each category has its own live effect
           </p>
         </div>
@@ -192,28 +200,28 @@ export function SkillsSection() {
           intervalMs={3500}
           pauseOnHover
           loop
-          spreadDeg={42}
+          spreadDeg={spreadDeg}
           renderCard={(item, { active }) => (
             <SkillStackCard item={item as SkillStackItem} active={active} />
           )}
         />
 
-        <div className="mt-16 grid grid-cols-2 gap-6 lg:grid-cols-4">
-          <div className="rounded-lg bg-white p-6 text-center text-black transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-            <div className="mb-2 text-3xl font-bold">3+</div>
-            <div className="text-sm text-gray-600">Years Experience</div>
+        <div className="mt-10 grid grid-cols-2 gap-3 sm:mt-16 sm:gap-6 lg:grid-cols-4">
+          <div className="rounded-lg bg-white p-4 text-center text-black transition-all duration-300 hover:-translate-y-1 hover:shadow-xl sm:p-6">
+            <div className="mb-1 text-2xl font-bold sm:mb-2 sm:text-3xl">3+</div>
+            <div className="text-xs text-gray-600 sm:text-sm">Years Experience</div>
           </div>
-          <div className="rounded-lg border border-gray-700 bg-gray-900 p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:bg-gray-800">
-            <div className="mb-2 text-3xl font-bold">Bachelors</div>
-            <div className="text-sm text-gray-400">Computer Science</div>
+          <div className="rounded-lg border border-gray-700 bg-gray-900 p-4 text-center transition-all duration-300 hover:-translate-y-1 hover:bg-gray-800 sm:p-6">
+            <div className="mb-1 text-2xl font-bold sm:mb-2 sm:text-3xl">Bachelors</div>
+            <div className="text-xs text-gray-400 sm:text-sm">Computer Science</div>
           </div>
-          <div className="rounded-lg border border-gray-700 bg-gray-900 p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:bg-gray-800">
-            <div className="mb-2 text-3xl font-bold">MS</div>
-            <div className="text-sm text-gray-400">Data Intelligence</div>
+          <div className="rounded-lg border border-gray-700 bg-gray-900 p-4 text-center transition-all duration-300 hover:-translate-y-1 hover:bg-gray-800 sm:p-6">
+            <div className="mb-1 text-2xl font-bold sm:mb-2 sm:text-3xl">MS</div>
+            <div className="text-xs text-gray-400 sm:text-sm">Data Intelligence</div>
           </div>
-          <div className="rounded-lg bg-white p-6 text-center text-black transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-            <div className="mb-2 text-3xl font-bold">SJSU</div>
-            <div className="text-sm text-gray-600">Graduate</div>
+          <div className="rounded-lg bg-white p-4 text-center text-black transition-all duration-300 hover:-translate-y-1 hover:shadow-xl sm:p-6">
+            <div className="mb-1 text-2xl font-bold sm:mb-2 sm:text-3xl">SJSU</div>
+            <div className="text-xs text-gray-600 sm:text-sm">Graduate</div>
           </div>
         </div>
       </div>

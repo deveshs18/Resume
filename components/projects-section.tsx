@@ -93,7 +93,7 @@ function ProjectDetailCard({ project, onClose }: { project: ProjectItem; onClose
   return (
     <CardCurtainReveal
       revealOnClick
-      className="h-[min(520px,90vh)] w-full max-w-md border border-zinc-800 bg-black text-white shadow-2xl"
+      className="h-[min(520px,92vh)] w-full max-w-md border border-zinc-800 bg-black text-white shadow-2xl"
     >
       <CardCurtainRevealBody className="flex flex-col">
         <button
@@ -105,7 +105,7 @@ function ProjectDetailCard({ project, onClose }: { project: ProjectItem; onClose
           Back to projects
         </button>
 
-        <CardCurtainRevealTitle className="text-2xl font-medium tracking-tight text-white sm:text-3xl">
+        <CardCurtainRevealTitle className="text-xl font-medium tracking-tight text-white sm:text-2xl md:text-3xl">
           {project.title}
         </CardCurtainRevealTitle>
 
@@ -154,7 +154,7 @@ export function ProjectsSection() {
   return (
     <section
       id="projects"
-      className="relative scroll-mt-20 min-h-screen overflow-hidden bg-black py-16 text-white md:py-24"
+      className="relative scroll-mt-20 overflow-hidden bg-black py-12 text-white sm:py-16 md:py-24"
     >
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-1/4 top-0 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl" />
@@ -162,18 +162,18 @@ export function ProjectsSection() {
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-10 text-center md:mb-14">
-          <h2 className="mb-4 bg-gradient-to-r from-cyan-300 via-white to-cyan-400 bg-clip-text text-4xl font-bold tracking-tight text-transparent md:text-6xl">
+        <div className="mb-8 text-center sm:mb-10 md:mb-14">
+          <h2 className="mb-3 bg-gradient-to-r from-cyan-300 via-white to-cyan-400 bg-clip-text text-3xl font-bold tracking-tight text-transparent sm:mb-4 sm:text-4xl md:text-6xl">
             Projects
           </h2>
-          <p className="text-lg font-light text-neutral-400 md:text-xl">
-            Scroll the carousel · hover cards · click to open details
+          <p className="px-2 text-sm font-light text-neutral-400 sm:text-lg md:text-xl">
+            Scroll the carousel · tap cards to open details
           </p>
         </div>
 
-        <div className="mx-auto flex w-full max-w-lg justify-center px-8">
+        <div className="relative mx-auto flex w-full max-w-lg justify-center px-4 pb-10 pt-8 sm:px-8 sm:pb-0 sm:pt-0">
           <Carousel opts={{ align: "start" }} orientation="vertical" className="w-full">
-            <CarouselContent className="-mt-1 h-[420px] sm:h-[500px]">
+            <CarouselContent className="-mt-1 h-[340px] sm:h-[420px] md:h-[500px]">
               {PROJECTS_DATA.map((project) => (
                 <CarouselItem key={project.id} className="basis-full pt-1 md:basis-1/2">
                   <button
@@ -210,8 +210,8 @@ export function ProjectsSection() {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className="border-cyan-500/40 bg-black text-cyan-400 hover:bg-cyan-500/10 hover:text-white" />
-            <CarouselNext className="border-cyan-500/40 bg-black text-cyan-400 hover:bg-cyan-500/10 hover:text-white" />
+            <CarouselPrevious className="top-0 size-9 border-cyan-500/40 bg-black text-cyan-400 hover:bg-cyan-500/10 hover:text-white sm:-top-12 sm:size-8" />
+            <CarouselNext className="bottom-0 size-9 border-cyan-500/40 bg-black text-cyan-400 hover:bg-cyan-500/10 hover:text-white sm:-bottom-12 sm:size-8" />
           </Carousel>
         </div>
       </div>
@@ -222,7 +222,7 @@ export function ProjectsSection() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-3 backdrop-blur-sm sm:p-4"
             onClick={() => setSelectedProjectId(null)}
           >
             <motion.div

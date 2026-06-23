@@ -93,7 +93,7 @@ export function TextHoverEffect({
         textAnchor="middle"
         dominantBaseline="middle"
         strokeWidth="0.3"
-        className="fill-transparent stroke-neutral-600 text-5xl font-bold sm:text-6xl"
+        className="fill-transparent stroke-neutral-600 text-4xl font-bold sm:text-5xl md:text-6xl"
         style={{ opacity: hovered ? 0.7 : 0 }}
       >
         {text}
@@ -105,7 +105,7 @@ export function TextHoverEffect({
         textAnchor="middle"
         dominantBaseline="middle"
         strokeWidth="0.3"
-        className="fill-transparent stroke-neutral-500 text-5xl font-bold sm:text-6xl"
+        className="fill-transparent stroke-neutral-500 text-4xl font-bold sm:text-5xl md:text-6xl"
         initial={{ strokeDashoffset: 1000, strokeDasharray: 1000 }}
         animate={{ strokeDashoffset: 0, strokeDasharray: 1000 }}
         transition={{ duration: 4, ease: "easeInOut" }}
@@ -121,7 +121,7 @@ export function TextHoverEffect({
         stroke={`url(#${gradientId})`}
         strokeWidth="0.3"
         mask={`url(#${textMaskId})`}
-        className="fill-transparent text-5xl font-bold sm:text-6xl"
+        className="fill-transparent text-4xl font-bold sm:text-5xl md:text-6xl"
       >
         {text}
       </text>

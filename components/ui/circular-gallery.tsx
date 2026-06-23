@@ -252,7 +252,7 @@ const CircularGallery = React.forwardRef<HTMLDivElement, CircularGalleryProps>(
 
                 aria-label={item.common}
 
-                className="absolute h-[340px] w-[260px] sm:h-[380px] sm:w-[280px] md:h-[400px] md:w-[300px]"
+                className="absolute h-[240px] w-[190px] max-[380px]:h-[220px] max-[380px]:w-[170px] sm:h-[300px] sm:w-[230px] md:h-[380px] md:w-[280px] lg:h-[400px] lg:w-[300px]"
 
                 style={{
 
@@ -296,11 +296,11 @@ const CircularGallery = React.forwardRef<HTMLDivElement, CircularGalleryProps>(
 
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
 
-                  <div className="absolute bottom-0 left-0 w-full p-4 text-white">
+                  <div className="absolute bottom-0 left-0 w-full p-3 text-white sm:p-4">
 
-                    <p className="text-xs font-medium text-cyan-300">{item.binomial}</p>
+                    <p className="text-[10px] font-medium text-cyan-300 sm:text-xs">{item.binomial}</p>
 
-                    <h2 className="mt-1 text-lg font-bold leading-tight md:text-xl">{item.common}</h2>
+                    <h2 className="mt-1 text-base font-bold leading-tight sm:text-lg md:text-xl">{item.common}</h2>
 
                     <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-neutral-300 opacity-90">
 

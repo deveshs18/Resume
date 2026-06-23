@@ -43,10 +43,11 @@ const AnimatedText = React.forwardRef<HTMLDivElement, AnimatedTextProps>(
     }
 
     return (
-      <div ref={ref} className={cn("flex items-center justify-center", className)} {...props}>
+      <div ref={ref} className={cn("flex items-center justify-center overflow-visible py-1", className)} {...props}>
         <motion.h1
           className={cn(
-            "text-[2.5rem] leading-normal sm:text-[3.5rem] md:text-[4rem] lg:text-[5rem] xl:text-[6rem]",
+            "overflow-visible leading-tight sm:leading-normal",
+            "text-[2.5rem] sm:text-[3.5rem] md:text-[4rem] lg:text-[5rem] xl:text-[6rem]",
             textClassName,
           )}
           style={{
