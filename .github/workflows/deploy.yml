@@ -30,6 +30,8 @@ jobs:
 
       - name: Build
         run: pnpm build
+        env:
+          GITHUB_PAGES: "true"
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4

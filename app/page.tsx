@@ -2,1145 +2,363 @@
 
 import type React from "react"
 
-import { useState, useRef, useEffect, Suspense } from "react"
-import { Canvas, useFrame, useThree } from "@react-three/fiber"
-import { Html, Environment } from "@react-three/drei"
-import type * as THREE from "three"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Mail, Phone, Linkedin, Menu, X, Calendar, ChevronDown } from "lucide-react"
+import { AnimatedText } from "@/components/ui/animated-shiny-text"
+import { ContainerScroll } from "@/components/ui/container-scroll-animation"
+import { LampContainer } from "@/components/ui/lamp"
+import { SparklesCore } from "@/components/ui/sparkles"
+import { ContactInfoPanel, SectionGlassPanel } from "@/components/ui/3d-hero-section-boxes"
+import { SplineScene } from "@/components/ui/splite"
+import { AnimatePresence, motion } from "framer-motion"
+import { CircularGallery, type GalleryItem } from "@/components/ui/circular-gallery"
+import { SkillsSection } from "@/components/skills-section"
+import { ProjectsSection } from "@/components/projects-section"
+import { ExpandableTabs } from "@/components/ui/expandable-tabs"
+import { cn } from "@/lib/utils"
+import {
+  Briefcase,
+  ArrowLeft,
+  ChevronLeft,
+  ChevronRight,
+  Code2,
+  FolderKanban,
+  Home,
+  Mail,
+  Linkedin,
+} from "lucide-react"
 
-function useMousePosition() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
-
-  useEffect(() => {
-    const updateMousePosition = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY })
-    }
-
-    window.addEventListener("mousemove", updateMousePosition)
-    return () => window.removeEventListener("mousemove", updateMousePosition)
-  }, [])
-
-  return mousePosition
-}
+const NAV_SECTIONS = [
+  { id: "home", label: "Home", icon: Home },
+  { id: "experience", label: "Experience", icon: Briefcase },
+  { id: "skills", label: "Skills", icon: Code2 },
+  { id: "projects", label: "Projects", icon: FolderKanban },
+  { id: "contact", label: "Contact", icon: Mail },
+] as const
 
 // Navigation component
 function Navigation({
   activeSection,
   setActiveSection,
 }: { activeSection: string; setActiveSection: (section: string) => void }) {
-  const [isOpen, setIsOpen] = useState(false)
-
-  const sections = [
-    { id: "hero", label: "Home" },
-    { id: "experience", label: "Experience" },
-    { id: "skills", label: "Skills" },
-    { id: "projects", label: "Projects" },
-    { id: "contact", label: "Contact" },
-  ]
-
   const scrollToSection = (sectionId: string) => {
     setActiveSection(sectionId)
-    const element = document.getElementById(sectionId)
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" })
-    }
+    document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" })
   }
 
+  const activeIndex = NAV_SECTIONS.findIndex((section) => section.id === activeSection)
+
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <div className="font-bold text-xl tracking-tight">DEVESH SINGH</div>
+    <nav className="fixed left-0 right-0 top-0 z-50 border-b border-cyan-500/20 bg-black/80 backdrop-blur-md">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
+        <button
+          type="button"
+          onClick={() => scrollToSection("home")}
+          className="shrink-0 bg-gradient-to-r from-cyan-400 to-sky-300 bg-clip-text text-sm font-bold tracking-tight text-transparent sm:text-base md:text-lg"
+        >
+          DEVESH SINGH
+        </button>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex space-x-1">
-            {sections.map((section) => (
-              <button
-                key={section.id}
-                onClick={() => scrollToSection(section.id)}
-                className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${activeSection === section.id
-                  ? "text-primary bg-primary/10 border-b-2 border-primary"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                  }`}
-              >
-                {section.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Mobile Navigation */}
-          <div className="md:hidden">
-            <Button variant="ghost" size="sm" onClick={() => setIsOpen(!isOpen)}>
-              {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </Button>
-          </div>
-        </div>
-
-        {/* Mobile Menu */}
-        {isOpen && (
-          <div className="md:hidden py-4 border-t border-border bg-background/95 backdrop-blur-md">
-            {sections.map((section) => (
-              <button
-                key={section.id}
-                onClick={() => {
-                  scrollToSection(section.id)
-                  setIsOpen(false)
-                }}
-                className={`block w-full text-left px-4 py-3 text-sm font-medium transition-colors rounded-md mx-2 mb-1 ${activeSection === section.id
-                  ? "text-primary bg-primary/10"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                  }`}
-              >
-                {section.label}
-              </button>
-            ))}
-          </div>
-        )}
+        <ExpandableTabs
+          tabs={NAV_SECTIONS.map((section) => ({
+            title: section.label,
+            icon: section.icon,
+          }))}
+          selected={activeIndex >= 0 ? activeIndex : null}
+          onChange={(index) => {
+            if (index !== null) {
+              scrollToSection(NAV_SECTIONS[index].id)
+            }
+          }}
+          dismissOnClickOutside={false}
+          activeColor="text-cyan-400"
+          selectedClassName="border border-cyan-500/40 bg-cyan-500/10 shadow-[0_0_16px_rgba(34,211,238,0.35)]"
+          className="max-w-full border-cyan-500/40 bg-black/90 shadow-[0_0_24px_rgba(34,211,238,0.15)] backdrop-blur-sm"
+        />
       </div>
     </nav>
   )
 }
 
-// Floating particles background
-function FloatingParticles() {
-  const particlesRef = useRef<THREE.Points>(null)
-
-  useFrame((state) => {
-    if (particlesRef.current) {
-      particlesRef.current.rotation.y = state.clock.elapsedTime * 0.05
-    }
-  })
-
-  const particleCount = 50
-  const positions = new Float32Array(particleCount * 3)
-
-  for (let i = 0; i < particleCount; i++) {
-    positions[i * 3] = (Math.random() - 0.5) * 20
-    positions[i * 3 + 1] = (Math.random() - 0.5) * 20
-    positions[i * 3 + 2] = (Math.random() - 0.5) * 20
-  }
-
-  return (
-    <points ref={particlesRef}>
-      <bufferGeometry>
-        <bufferAttribute attach="attributes-position" count={particleCount} array={positions} itemSize={3} />
-      </bufferGeometry>
-      <pointsMaterial size={0.05} color="white" transparent opacity={0.6} />
-    </points>
-  )
-}
-
 // Hero Section Component
 function HeroSection() {
-  const scrollToNext = () => {
-    document.getElementById("experience")?.scrollIntoView({ behavior: "smooth" })
-  }
-
   return (
-    <section
-      id="home"
-      className="min-h-screen bg-black text-white relative overflow-hidden flex items-center justify-center"
-    >
-      {/* 3D Background */}
-      <div className="absolute inset-0 w-full h-full">
-        <Canvas
-          camera={{ position: [0, 0, 5], fov: 75 }}
-          style={{ width: "100%", height: "100%" }}
-          gl={{ antialias: true, alpha: true }}
-        >
-          <Suspense fallback={null}>
-            <ambientLight intensity={0.6} />
-            <pointLight position={[10, 10, 10]} intensity={1} />
-            <pointLight position={[-10, -10, -10]} intensity={0.5} color="#ffffff" />
-
-            <FloatingParticles />
-
-            <Environment preset="studio" />
-          </Suspense>
-        </Canvas>
-      </div>
-
-      {/* Content */}
-      <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
-        <h1 className="text-6xl md:text-8xl font-bold mb-4 tracking-tight">DEVESH SINGH</h1>
-        <p className="text-xl md:text-2xl text-gray-300 mb-8 font-light">Software Development Engineer</p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button
-            size="lg"
-            className="bg-white text-black hover:bg-gray-200 transition-all duration-300 transform hover:scale-105"
-            onClick={() => document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" })}
-          >
-            View My Work
-          </Button>
-          <Button
-            size="lg"
-            variant="outline"
-            className="border-white text-white hover:bg-white hover:text-black transition-all duration-300 transform hover:scale-105 bg-transparent"
-            onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
-          >
-            Get In Touch
-          </Button>
-        </div>
-      </div>
-
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-        <ChevronDown className="w-6 h-6 text-white" />
-      </div>
-    </section>
-  )
-}
-
-function ExperienceStickFigure({
-  position = [0, 0, 0],
-  scale = 1,
-}: {
-  position?: [number, number, number]
-  scale?: number
-}) {
-  const groupRef = useRef<THREE.Group>(null)
-  const leftArmRef = useRef<THREE.Mesh>(null)
-  const rightArmRef = useRef<THREE.Mesh>(null)
-  const headRef = useRef<THREE.Mesh>(null)
-  const leftEyeRef = useRef<THREE.Mesh>(null)
-  const rightEyeRef = useRef<THREE.Mesh>(null)
-
-  const { camera, gl } = useThree()
-  const mousePosition = useMousePosition()
-
-  useFrame((state) => {
-    if (groupRef.current) {
-      groupRef.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * 0.6) * 0.15
-    }
-
-    if (leftArmRef.current && rightArmRef.current) {
-      const point = Math.sin(state.clock.elapsedTime * 2) * 0.4
-      leftArmRef.current.rotation.z = -0.8 + point
-      rightArmRef.current.rotation.z = 1.2 // Strong pointing gesture
-      rightArmRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 1.5) * 0.2
-    }
-
-    if (headRef.current) {
-      headRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 1) * 0.4
-      headRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.8) * 0.1
-    }
-
-    if (leftEyeRef.current && rightEyeRef.current && groupRef.current) {
-      const rect = gl.domElement.getBoundingClientRect()
-      const x = ((mousePosition.x - rect.left) / rect.width) * 2 - 1
-      const y = -((mousePosition.y - rect.top) / rect.height) * 2 + 1
-
-      const eyeMovement = 0.08
-      leftEyeRef.current.position.x = -0.05 + x * eyeMovement
-      leftEyeRef.current.position.z = 0.12 + y * eyeMovement
-      rightEyeRef.current.position.x = 0.05 + x * eyeMovement
-      rightEyeRef.current.position.z = 0.12 + y * eyeMovement
-    }
-  })
-
-  return (
-    <group ref={groupRef} position={position} scale={scale}>
-      {/* Head */}
-      <mesh ref={headRef} position={[0, 0.8, 0]}>
-        <sphereGeometry args={[0.15, 16, 16]} />
-        <meshStandardMaterial color="#ffffff" />
-      </mesh>
-
-      {/* Eyes */}
-      <mesh ref={leftEyeRef} position={[-0.05, 0.85, 0.12]}>
-        <sphereGeometry args={[0.02, 8, 8]} />
-        <meshStandardMaterial color="#000000" />
-      </mesh>
-      <mesh ref={rightEyeRef} position={[0.05, 0.85, 0.12]}>
-        <sphereGeometry args={[0.02, 8, 8]} />
-        <meshStandardMaterial color="#000000" />
-      </mesh>
-
-      {/* Smile */}
-      <mesh position={[0, 0.75, 0.12]}>
-        <torusGeometry args={[0.04, 0.01, 8, 16, Math.PI]} />
-        <meshStandardMaterial color="#000000" />
-      </mesh>
-
-      {/* Body */}
-      <mesh position={[0, 0.3, 0]}>
-        <cylinderGeometry args={[0.08, 0.08, 0.6, 8]} />
-        <meshStandardMaterial color="#ffffff" />
-      </mesh>
-
-      {/* Arms */}
-      <mesh ref={leftArmRef} position={[-0.15, 0.5, 0]} rotation={[0, 0, -0.5]}>
-        <cylinderGeometry args={[0.03, 0.03, 0.4, 8]} />
-        <meshStandardMaterial color="#ffffff" />
-      </mesh>
-      <mesh ref={rightArmRef} position={[0.15, 0.5, 0]} rotation={[0, 0, 0.8]}>
-        <cylinderGeometry args={[0.03, 0.03, 0.4, 8]} />
-        <meshStandardMaterial color="#ffffff" />
-      </mesh>
-
-      {/* Legs */}
-      <mesh position={[-0.08, -0.2, 0]} rotation={[0, 0, -0.1]}>
-        <cylinderGeometry args={[0.03, 0.03, 0.4, 8]} />
-        <meshStandardMaterial color="#ffffff" />
-      </mesh>
-      <mesh position={[0.08, -0.2, 0]} rotation={[0, 0, 0.1]}>
-        <cylinderGeometry args={[0.03, 0.03, 0.4, 8]} />
-        <meshStandardMaterial color="#ffffff" />
-      </mesh>
-
-      <Html position={[0.5, 1.2, 0]} center>
-        <div className="bg-white text-black px-2 py-1 rounded-lg shadow-lg text-xs max-w-[100px] relative">
-          My journey!
-          <div className="absolute -bottom-1 -left-1 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-white"></div>
-        </div>
-      </Html>
-    </group>
-  )
-}
-
-// Skills Section Component
-function SkillsSection() {
-  return (
-    <section id="skills" className="min-h-screen bg-black text-white py-20 relative">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-        {/* Programming Languages */}
-        <div className="flex-1 bg-gray-900 p-8 rounded-lg hover:bg-gray-800 transition-all duration-300">
-          <h3 className="text-2xl font-bold mb-6 text-white">Programming Languages</h3>
-          <div className="flex flex-wrap gap-3">
-            {["Python", "Java", "JavaScript"].map((skill) => (
-              <span
-                key={skill}
-                className="px-4 py-2 bg-white text-black text-lg font-medium rounded-full hover:bg-gray-200 transition-colors transform hover:scale-105"
-              >
-                {skill}
-              </span>
-            ))}
+    <section id="home" className="scroll-mt-20 overflow-hidden bg-black text-white">
+      <ContainerScroll
+        titleComponent={
+          <>
+            <AnimatedText
+              text="DEVESH SINGH"
+              className="py-0"
+              textClassName="text-[2rem] font-bold leading-tight sm:text-[2.75rem] md:text-[4rem] lg:text-[5rem]"
+              gradientColors="linear-gradient(90deg, #0891b2, #e2e8f0, #22d3ee, #ffffff, #0891b2)"
+              gradientAnimationDuration={4}
+              hoverEffect
+            />
+            <p className="mt-1 text-sm font-light text-neutral-300 md:text-lg">
+              Software Development Engineer
+            </p>
+          </>
+        }
+      >
+        <LampContainer embedded className="h-full">
+          <div className="relative z-20 max-w-xl space-y-4 text-center text-sm leading-relaxed text-slate-300 md:max-w-2xl md:text-base">
+            <p>
+              I&apos;m passionate about technology and constantly push myself to stay current across full-stack
+              development, data engineering, and AI engineering. I enjoy building scalable systems, experimenting with
+              modern AI, and creating products that combine intelligent automation with strong engineering foundations.
+            </p>
+            <p>
+              What excites me most is AI-driven applications and multi-agent systems that solve complex real-world
+              problems in practical ways. For me, learning never stops — I love exploring new technologies, adapting
+              quickly, and turning innovative ideas into impactful solutions.
+            </p>
           </div>
-        </div>
 
-        {/* Tools & Platforms */}
-        <div className="flex-1 bg-gray-900 p-8 rounded-lg hover:bg-gray-800 transition-all duration-300">
-          <h3 className="text-2xl font-bold mb-6 text-white">Tools & Platforms</h3>
-          <div className="flex flex-wrap gap-2">
-            {[
-              "Git",
-              "Docker",
-              "AWS",
-              "Apache Kafka",
-              "Apache Spark",
-              "Apache Flink",
-              "Hadoop",
-              "KSQLDB",
-              "PostgreSQL",
-              "MySQL",
-              "MongoDB",
-              "Snowflake",
-              "Postman",
-              "gRPC",
-            ].map((tool) => (
-              <span
-                key={tool}
-                className="px-3 py-1 bg-white text-black text-sm rounded-full hover:bg-gray-200 transition-colors transform hover:scale-105"
-              >
-                {tool}
-              </span>
-            ))}
+          <div className="relative z-10 h-20 w-full max-w-md md:h-24">
+            <div className="absolute inset-x-8 top-0 h-[2px] w-3/4 bg-gradient-to-r from-transparent via-cyan-500 to-transparent blur-sm" />
+            <div className="absolute inset-x-8 top-0 h-px w-3/4 bg-gradient-to-r from-transparent via-cyan-500 to-transparent" />
+            <SparklesCore
+              background="transparent"
+              minSize={0.4}
+              maxSize={1}
+              particleDensity={600}
+              className="h-full w-full"
+              particleColor="#22d3ee"
+              speed={2}
+            />
+            <div className="absolute inset-0 h-full w-full bg-slate-950 [mask-image:radial-gradient(240px_100px_at_top,transparent_20%,white)]" />
           </div>
-        </div>
 
-        {/* Frameworks & Libraries */}
-        <div className="flex-1 bg-gray-900 p-8 rounded-lg hover:bg-gray-800 transition-all duration-300">
-          <h3 className="text-2xl font-bold mb-6 text-white">Frameworks & Libraries</h3>
-          <div className="flex flex-wrap gap-2">
-            {[
-              "React.js",
-              "Node.js",
-              "Angular",
-              "Flask",
-              "scikit-learn",
-              "PyTorch",
-              "Hugging Face",
-              "FinBERT",
-              "spaCy",
-              "NLTK",
-              "Transformers",
-              "LangChain",
-              "QLoRA",
-              "CUDA",
-            ].map((framework) => (
-              <span
-                key={framework}
-                className="px-3 py-1 bg-white text-black text-sm rounded-full hover:bg-gray-200 transition-colors transform hover:scale-105"
-              >
-                {framework}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* AI & Data Science (New Category) */}
-      <div className="bg-gray-900 p-8 rounded-lg hover:bg-gray-800 transition-all duration-300 mb-12">
-        <h3 className="text-2xl font-bold mb-6 text-white">AI & Data Science</h3>
-        <div className="flex flex-wrap gap-3">
-          {[
-            "Large Language Models (LLMs)",
-            "Retrieval-Augmented Generation (RAG)",
-            "Generative AI",
-            "Fine-Tuning",
-            "Prompt Engineering",
-            "Symbolic AI",
-            "Natural Language Processing (NLP)",
-            "Sequence Modeling",
-            "Computer Vision (CNNs)",
-          ].map((skill) => (
-            <span
-              key={skill}
-              className="px-4 py-2 bg-white text-black text-lg font-medium rounded-full hover:bg-gray-200 transition-colors transform hover:scale-105"
+          <div className="relative z-20 flex flex-col gap-3 sm:flex-row">
+            <Button
+              size="lg"
+              className="bg-cyan-500 text-black hover:bg-cyan-400"
+              onClick={() => document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" })}
             >
-              {skill}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white text-black p-6 rounded-lg text-center hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-          <div className="text-3xl font-bold mb-2">3+</div>
-          <div className="text-sm text-gray-600">Years Experience</div>
-        </div>
-        <div className="bg-gray-900 border border-gray-700 p-6 rounded-lg text-center hover:bg-gray-800 transition-all duration-300 transform hover:-translate-y-1">
-          <div className="text-3xl font-bold mb-2">Major</div>
-          <div className="text-sm text-gray-400">Projects</div>
-        </div>
-        <div className="bg-gray-900 border border-gray-700 p-6 rounded-lg text-center hover:bg-gray-800 transition-all duration-300 transform hover:-translate-y-1">
-          <div className="text-3xl font-bold mb-2">MS</div>
-          <div className="text-sm text-gray-400">Data Intelligence</div>
-        </div>
-        <div className="bg-white text-black p-6 rounded-lg text-center hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-          <div className="text-3xl font-bold mb-2">SJSU</div>
-          <div className="text-sm text-gray-600">Graduate</div>
-        </div>
-      </div>
+              View My Work
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="border-cyan-500/50 bg-transparent text-white hover:bg-cyan-500/10"
+              onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
+            >
+              Get In Touch
+            </Button>
+          </div>
+        </LampContainer>
+      </ContainerScroll>
     </section>
   )
 }
 
-function SkillsStickFigure({ position, scale }) {
-  const groupRef = useRef()
-  const leftArmRef = useRef()
-  const rightArmRef = useRef()
-  const headRef = useRef()
-  const leftEyeRef = useRef()
-  const rightEyeRef = useRef()
-  const mousePosition = useMousePosition()
-
-  useFrame((state) => {
-    const time = state.clock.getElapsedTime()
-
-    if (groupRef.current) {
-      // Gentle floating animation
-      groupRef.current.position.y = position[1] + Math.sin(time * 1.5) * 0.1
-      groupRef.current.rotation.z = Math.sin(time * 0.8) * 0.05
-    }
-
-    // Enhanced typing animation
-    if (leftArmRef.current && rightArmRef.current) {
-      leftArmRef.current.rotation.z = Math.sin(time * 8) * 0.4 + 0.3
-      rightArmRef.current.rotation.z = -Math.sin(time * 8 + 0.5) * 0.4 - 0.3
-    }
-
-    // Subtle head movement
-    if (headRef.current) {
-      headRef.current.rotation.y = Math.sin(time * 0.7) * 0.1
-    }
-
-    // Enhanced mouse-following eyes
-    if (leftEyeRef.current && rightEyeRef.current && mousePosition) {
-      const eyeMovement = {
-        x: (mousePosition.x - 0.5) * 0.3,
-        y: -(mousePosition.y - 0.5) * 0.3,
-      }
-
-      leftEyeRef.current.position.x = -0.08 + eyeMovement.x
-      leftEyeRef.current.position.y = 0.05 + eyeMovement.y
-      rightEyeRef.current.position.x = 0.08 + eyeMovement.x
-      rightEyeRef.current.position.y = 0.05 + eyeMovement.y
-    }
-  })
-
-  return (
-    <group ref={groupRef} position={position} scale={scale}>
-      {/* Head */}
-      <mesh ref={headRef} position={[0, 0.5, 0]}>
-        <sphereGeometry args={[0.15, 16, 16]} />
-        <meshStandardMaterial color="white" />
-      </mesh>
-
-      {/* Eyes */}
-      <mesh ref={leftEyeRef} position={[-0.08, 0.55, 0.12]}>
-        <sphereGeometry args={[0.02, 8, 8]} />
-        <meshStandardMaterial color="black" />
-      </mesh>
-      <mesh ref={rightEyeRef} position={[0.08, 0.55, 0.12]}>
-        <sphereGeometry args={[0.02, 8, 8]} />
-        <meshStandardMaterial color="black" />
-      </mesh>
-
-      {/* Smile */}
-      <mesh position={[0, 0.45, 0.12]}>
-        <torusGeometry args={[0.04, 0.008, 8, 16, Math.PI]} />
-        <meshStandardMaterial color="black" />
-      </mesh>
-
-      {/* Body */}
-      <mesh position={[0, 0, 0]}>
-        <cylinderGeometry args={[0.08, 0.08, 0.6, 8]} />
-        <meshStandardMaterial color="white" />
-      </mesh>
-
-      {/* Arms */}
-      <mesh ref={leftArmRef} position={[-0.15, 0.1, 0]} rotation={[0, 0, 0.3]}>
-        <cylinderGeometry args={[0.03, 0.03, 0.4, 8]} />
-        <meshStandardMaterial color="white" />
-      </mesh>
-      <mesh ref={rightArmRef} position={[0.15, 0.1, 0]} rotation={[0, 0, -0.3]}>
-        <cylinderGeometry args={[0.03, 0.03, 0.4, 8]} />
-        <meshStandardMaterial color="white" />
-      </mesh>
-
-      {/* Legs */}
-      <mesh position={[-0.08, -0.5, 0]}>
-        <cylinderGeometry args={[0.03, 0.03, 0.4, 8]} />
-        <meshStandardMaterial color="white" />
-      </mesh>
-      <mesh position={[0.08, -0.5, 0]}>
-        <cylinderGeometry args={[0.03, 0.03, 0.4, 8]} />
-        <meshStandardMaterial color="white" />
-      </mesh>
-
-      {/* Keyboard (typing animation prop) */}
-      <mesh position={[0, -0.1, 0.2]}>
-        <boxGeometry args={[0.3, 0.05, 0.15]} />
-        <meshStandardMaterial color="gray" />
-      </mesh>
-    </group>
-  )
+type ExperienceItem = {
+  title: string
+  company: string
+  period: string
+  location: string
+  achievements: string[]
+  technologies: string[]
+  image: string
 }
 
-const projectsData = [
+const EXPERIENCE_DATA: ExperienceItem[] = [
   {
-    id: 1,
-    title: "UBER Simulation – Distributed Systems Project",
-    shortDescription:
-      "Designed and implemented microservices-based ride hailing system using Kafka, Redis, MongoDB, MySQL, and XGBoost for dynamic pricing on Kaggle ride data.",
-    fullDescription:
-      "Designed and implemented a microservices-based ride-hailing system using Node.js, Kafka, Redis, MongoDB, MySQL, and XGBoost for dynamic pricing on Kaggle ride data. Deployed containerized services on AWS using Docker and Kubernetes, with Kafka for messaging, Redis for caching, and load testing via JMeter on 10K+ records. Architected modular microservices for drivers, customers, billing, and rides, enabling scalability and fault tolerance.",
-    image: "/Resume/ride-hailing-app.png",
-    techStack: [
-      "Node.js",
-      "Express",
-      "MongoDB",
-      "Kafka",
-      "Redis",
-      "Docker",
-      "Kubernetes",
-      "AWS",
-      "JMeter",
-      "XGBoost",
-      "JavaScript",
-    ],
-    githubLink: "https://github.com/deveshs18/UBER",
+    title: "Instructional Student Asst. — Deep Learning",
+    company: "San José State University",
+    period: "Jan 2026 – May 2026",
+    location: "San José, CA",
     achievements: [
-      "Deployed containerized services on AWS using Docker and Kubernetes",
-      "Implemented Kafka for messaging and Redis for caching",
-      "Load tested via JMeter on 10K+ records",
-      "Architected modular microservices for scalability and fault tolerance",
+      "Mentored over 30 graduate students on convolutional and transformer model architectures, model optimization, deployment, and supervised GPU/NPU lab sessions including training and inference execution on Mobilint MLA100 NPU hardware.",
     ],
+    technologies: ["PyTorch", "CNN", "Transformers", "NPU", "Mobilint MLA100", "GPU", "Deep Learning"],
+    image:
+      "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=900&auto=format&fit=crop&q=80",
   },
   {
-    id: 2,
-    title: "Sentimental Stock Prediction using GenAI",
-    shortDescription:
-      "Integrated GPT API with FinBERT to auto-generate market insights, cutting analysis time by 70% and improving accuracy by 15%.",
-    fullDescription:
-      "Integrated GPT API with FinBERT to auto-generate market insights, cutting analysis time by 70% and improving accuracy by 15%. Built a time-decay sentiment model, increasing prediction relevance by 25% over baseline. Developed a PyTorch pipeline combining FinBERT sentiment and technical indicators for trend forecasting.",
-    image: "/Resume/financial-dashboard.png",
-    techStack: ["FinBERT", "PyTorch", "Transformers", "Streamlit", "Python"],
-    githubLink: "https://github.com/deveshs18/Sentimental_stock_predictor",
+    title: "Data Engineer Intern",
+    company: "ASANTE Inc.",
+    period: "May 2025 – Aug 2025",
+    location: "Remote",
     achievements: [
-      "Cut analysis time by 70% and improved accuracy by 15%",
-      "Built time-decay sentiment model with 25% better prediction relevance",
-      "Developed PyTorch pipeline combining sentiment and technical indicators",
-      "Integrated GPT API for automated market insights generation",
+      "Saved $2,300/month by productionizing a Shopify Te-Credits wallet using Admin API, Storefront API & GraphQL — automated secure transaction workflows, eliminating 80% of manual development effort.",
+      "Reduced customer-support volume by 40% by engineering a production LLM chatbot using Retrieval-Augmented Generation (RAG), vector embeddings and semantic search, and architected fallback workflows to handle failures gracefully.",
+      "Projected 15% lift in revenue via a collaborative-filtering recommendation engine powered by behavioral analytics; delivered actionable performance insights through Power BI dashboards to product stakeholders.",
+      "Developed human-in-the-loop escalation workflow for the LLM chatbot, routing complex queries to support agents to ensure resolution accuracy.",
     ],
+    technologies: ["Shopify", "GraphQL", "RAG", "LLM", "Power BI", "Python", "Vector DB"],
+    image:
+      "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=900&auto=format&fit=crop&q=80",
   },
   {
-    id: 3,
-    title: "Sentiment & Lingo Trend Analysis",
-    shortDescription:
-      "Engineered a Kafka-Spark NLP pipeline handling 1,200+ tweets/hour, with PostgreSQL and Grafana for live trend tracking.",
-    fullDescription:
-      "Engineered a Kafka-Spark NLP pipeline handling 1,200+ tweets/hour, with PostgreSQL and Grafana for live trend tracking. Applied Bloom Filter, Flajolet-Martin, and Count-Min Sketch for efficient deduplication, interaction estimation, and frequency tracking in high-velocity data streams. Integrated NLTK and spaCy for sentiment and entity recognition, delivering high-quality insights and enabling seamless collaboration.",
-    image: "/Resume/social-media-analytics-dashboard.png",
-    techStack: ["Kafka", "Apache Spark", "PySpark", "Twitter API", "PostgreSQL", "Grafana", "NLTK", "spaCy"],
-    githubLink: "https://github.com/deveshs18/Trend_Analysis_BigData",
+    title: "Software Development Engineer",
+    company: "Tata Consultancy Services",
+    period: "Oct 2021 – Jul 2024",
+    location: "India",
     achievements: [
-      "Handled 1,200+ tweets/hour with real-time processing",
-      "Applied advanced algorithms for efficient data stream processing",
-      "Integrated NLTK and spaCy for sentiment and entity recognition",
-      "Built live trend tracking with PostgreSQL and Grafana",
+      "Designed system architecture for a PostgreSQL → Elasticsearch data pipeline via Logstash (ELK Stack) to offload read-heavy analytics queries, eliminating 90% of production DB load and cutting backend cache utilization by 75%.",
+      "Accelerated data retrieval by 40% engineering a star-schema data warehouse on AWS (S3, ECS, ECR) enabling scalable BI reporting on millions of records across cross-functional teams.",
+      "Reduced ticket resolution time by 30% architecting an Angular + Spring Boot Issue Deduction System centralizing error tracking, workflow automation & alerting — serving 50K+ daily active users with zero downtime.",
+      "Designed and implemented REST APIs using Spring Boot to enable microservices integration and improve scalability across internal tools.",
     ],
-  },
-  {
-    id: 4,
-    title: "Text-to-SQL (LLM + RAG)",
-    shortDescription:
-      "A framework for querying relational databases using natural language, benchmarking local LLMs vs APIs with Schema-RAG and SQL auto-correction.",
-    fullDescription:
-      "Built a comprehensive evaluation and deployment framework for Text-to-SQL systems. The framework benchmarks open-source local LLMs (Qwen) vs commercial APIs (GPT-4o) under controlled prompting and schema retrieval settings. Designed a modular pipeline featuring Schema-RAG, model-aware prompt builder, SQL validation/repair layer, and an execution harness with metrics like Execution Accuracy (EX) and Semantic Similarity.",
-    image: "/Resume/text-to-sql.png",
-    techStack: [
-      "Python",
-      "SQLite",
-      "HuggingFace",
-      "Transformers",
-      "QLoRA",
-      "OpenAI API",
-      "RAG",
-      "LLMs",
-      "SQLAlchemy",
-    ],
-    githubLink: "https://github.com/deveshs18/Text-To-SQL",
-    achievements: [
-      "Up to +38.6% Execution Accuracy improvement with Schema-RAG grounding",
-      "Benchmarked 4 models across 4 prompting strategies (Few-Shot, CoT, etc.)",
-      "Implemented a lightweight SQL auto-correction layer for noisy LLM outputs",
-      "Fine-tuned Qwen 0.5B using QLoRA for improved executability",
-    ],
-  },
-  {
-    id: 5,
-    title: "Lyrics2Music – AI Music Generation",
-    shortDescription:
-      "An end-to-end deep learning pipeline generating structured MIDI from lyrics using emotion alignment and Transformer-based modeling.",
-    fullDescription:
-      "Lyric2Music is a 4-stage modular AI pipeline: Emotion Detection (DistilBERT) → Control Mapping (MLP) → Music Generation (Transformer) → Emotion Verification. Developed a custom Structured REMI tokenizer and trained a multi-task Transformer on 16,000+ MIDI files to ensure harmonic coherence and rhythmic alignment.",
-    image: "/Resume/lyrics-to-music.png",
-    techStack: [
-      "PyTorch",
-      "Transformers",
-      "DistilBERT",
-      "CUDA",
-      "MIDI",
-      "Python",
-      "CNN",
-      "NumPy",
-    ],
-    githubLink: "https://github.com/deveshs18/Lyrics2Music",
-    achievements: [
-      "Achieved 100% triadic chord coherence in generated MIDI output",
-      "Designed a custom ~600-token Structured REMI vocabulary for music",
-      "Fine-tuned DistilBERT for regression-based valence-arousal extraction",
-      "Trained on 16K+ MIDI files with chord-aware multi-task learning",
-    ],
+    technologies: ["PostgreSQL", "Elasticsearch", "AWS", "Angular", "Spring Boot", "Logstash", "REST APIs"],
+    image:
+      "https://images.unsplash.com/photo-1497366216548-37526070297c?w=900&auto=format&fit=crop&q=80",
   },
 ]
 
-// Projects Section Component
-function ProjectsSection() {
-  const [selectedProject, setSelectedProject] = useState<number | null>(null)
-
-  const openProjectDetails = (projectId: number) => {
-    setSelectedProject(projectId)
+function experienceToGalleryItem(experience: ExperienceItem): GalleryItem {
+  return {
+    common: experience.title,
+    binomial: experience.company,
+    photo: {
+      url: experience.image,
+      text: experience.achievements[0],
+      by: `${experience.period} · ${experience.location}`,
+      pos: "center",
+    },
+    tags: experience.technologies.slice(0, 4),
   }
+}
 
-  const closeProjectDetails = () => {
-    setSelectedProject(null)
-  }
-
+function ExpandedExperienceCard({
+  experience,
+  onBack,
+}: {
+  experience: ExperienceItem
+  onBack: () => void
+}) {
   return (
-    <section id="projects" className="min-h-screen bg-white text-black py-20 relative">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-        {projectsData.map((project) => (
-          <div
-            key={project.id}
-            className="bg-gray-50 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
-          >
-            <div className="h-48 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-              <img
-                src={project.image || "/placeholder.svg"}
-                alt={project.title}
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="p-6">
-              <h3 className="text-xl font-bold mb-3">{project.title}</h3>
-              <p className="text-gray-600 mb-4 text-sm">{project.shortDescription}</p>
-              <div className="flex flex-wrap gap-2 mb-4">
-                {project.techStack.slice(0, 4).map((tech) => (
-                  <span key={tech} className="px-2 py-1 bg-black text-white text-xs rounded-full">
-                    {tech}
-                  </span>
-                ))}
-                {project.techStack.length > 4 && (
-                  <span className="px-2 py-1 bg-black text-white text-xs rounded-full">
-                    +{project.techStack.length - 4} more
-                  </span>
-                )}
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  className="bg-black text-white hover:bg-gray-800"
-                  onClick={() => openProjectDetails(project.id)}
-                >
-                  View Details
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="border-black text-black hover:bg-black hover:text-white bg-transparent"
-                  onClick={() => window.open(project.githubLink, "_blank")}
-                >
-                  Code
-                </Button>
-              </div>
-            </div>
-          </div>
-        ))}
+    <div className="overflow-hidden rounded-2xl border border-cyan-400/40 bg-slate-950/95 shadow-[0_0_48px_rgba(34,211,238,0.18)] backdrop-blur-md">
+      <div className="relative h-36 sm:h-44 md:h-48">
+        <img
+          src={experience.image}
+          alt={experience.company}
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-slate-950/20" />
+        <button
+          type="button"
+          onClick={onBack}
+          className="absolute left-4 top-4 z-10 flex items-center gap-2 rounded-full border border-cyan-500/40 bg-black/70 px-4 py-2 text-sm font-medium text-cyan-300 backdrop-blur-sm transition-all hover:border-cyan-400 hover:bg-cyan-500/10 hover:text-white"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back
+        </button>
+        <div className="absolute bottom-0 left-0 w-full px-5 pb-4 md:px-6 md:pb-5">
+          <p className="text-sm font-semibold text-cyan-400">{experience.company}</p>
+          <h3 className="mt-0.5 text-xl font-bold text-white md:text-2xl">{experience.title}</h3>
+          <p className="mt-1 text-sm text-neutral-400">
+            {experience.period} · {experience.location}
+          </p>
+        </div>
       </div>
 
-      {selectedProject && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              {(() => {
-                const project = projectsData.find((p) => p.id === selectedProject)
-                if (!project) return null
+      <div className="max-h-[380px] overflow-y-auto px-5 py-5 md:max-h-[420px] md:px-6 md:py-6">
+        <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-cyan-300/80">
+          Key contributions
+        </h4>
+        <ul className="space-y-3">
+          {experience.achievements.map((achievement) => (
+            <li key={achievement} className="flex gap-3 text-sm leading-relaxed text-neutral-300 md:text-base">
+              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-400 shadow-[0_0_6px_rgba(34,211,238,0.8)]" />
+              <span>{achievement}</span>
+            </li>
+          ))}
+        </ul>
 
-                return (
-                  <>
-                    <div className="flex justify-between items-start mb-6">
-                      <h2 className="text-2xl font-bold text-black">{project.title}</h2>
-                      <button onClick={closeProjectDetails} className="text-gray-500 hover:text-black text-2xl">
-                        ×
-                      </button>
-                    </div>
-
-                    <div className="mb-6">
-                      <img
-                        src={project.image || "/placeholder.svg"}
-                        alt={project.title}
-                        className="w-full h-64 object-cover rounded-lg"
-                      />
-                    </div>
-
-                    <div className="mb-6">
-                      <h3 className="text-lg font-semibold mb-3">Project Overview</h3>
-                      <p className="text-gray-700 leading-relaxed">{project.fullDescription}</p>
-                    </div>
-
-                    <div className="mb-6">
-                      <h3 className="text-lg font-semibold mb-3">Key Achievements</h3>
-                      <ul className="space-y-2">
-                        {project.achievements.map((achievement, index) => (
-                          <li key={index} className="flex items-start">
-                            <span className="text-black mr-2">•</span>
-                            <span className="text-gray-700">{achievement}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div className="mb-6">
-                      <h3 className="text-lg font-semibold mb-3">Technology Stack</h3>
-                      <div className="flex flex-wrap gap-2">
-                        {project.techStack.map((tech) => (
-                          <span key={tech} className="px-3 py-1 bg-black text-white text-sm rounded-full">
-                            {tech}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="flex gap-4">
-                      <Button
-                        className="bg-black text-white hover:bg-gray-800"
-                        onClick={() => window.open(project.githubLink, "_blank")}
-                      >
-                        View on GitHub
-                      </Button>
-                      <Button
-                        variant="outline"
-                        className="border-black text-black hover:bg-black hover:text-white bg-transparent"
-                        onClick={closeProjectDetails}
-                      >
-                        Close
-                      </Button>
-                    </div>
-                  </>
-                )
-              })()}
-            </div>
+        <div className="mt-5 border-t border-cyan-500/15 pt-4">
+          <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-cyan-300/80">
+            Technologies
+          </h4>
+          <div className="flex flex-wrap gap-2">
+            {experience.technologies.map((tech) => (
+              <span
+                key={tech}
+                className="rounded-full border border-cyan-500/25 bg-cyan-500/10 px-3 py-1 text-xs text-cyan-200"
+              >
+                {tech}
+              </span>
+            ))}
           </div>
         </div>
-      )}
-
-
-    </section>
-  )
-}
-
-function ProjectsStickFigure({
-  position = [0, 0, 0],
-  scale = 1,
-}: {
-  position?: [number, number, number]
-  scale?: number
-}) {
-  const groupRef = useRef<THREE.Group>(null)
-  const leftArmRef = useRef<THREE.Mesh>(null)
-  const rightArmRef = useRef<THREE.Mesh>(null)
-  const headRef = useRef<THREE.Mesh>(null)
-  const leftEyeRef = useRef<THREE.Mesh>(null)
-  const rightEyeRef = useRef<THREE.Mesh>(null)
-
-  const { camera, gl } = useThree()
-  const mousePosition = useMousePosition()
-
-  useFrame((state) => {
-    if (groupRef.current) {
-      groupRef.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * 0.5) * 0.18
-    }
-
-    if (leftArmRef.current && rightArmRef.current) {
-      const present = Math.sin(state.clock.elapsedTime * 1.8) * 0.5
-      leftArmRef.current.rotation.z = -1.0 + present * 0.7
-      rightArmRef.current.rotation.z = 1.0 - present * 0.7
-      leftArmRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 1.2) * 0.3
-      rightArmRef.current.rotation.y = -Math.sin(state.clock.elapsedTime * 1.2) * 0.3
-    }
-
-    if (headRef.current) {
-      headRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 1.1) * 0.35
-      headRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.9) * 0.15
-    }
-
-    if (leftEyeRef.current && rightEyeRef.current && groupRef.current) {
-      const rect = gl.domElement.getBoundingClientRect()
-      const x = ((mousePosition.x - rect.left) / rect.width) * 2 - 1
-      const y = -((mousePosition.y - rect.top) / rect.height) * 2 + 1
-
-      const eyeMovement = 0.08
-      leftEyeRef.current.position.x = -0.05 + x * eyeMovement
-      leftEyeRef.current.position.z = 0.12 + y * eyeMovement
-      rightEyeRef.current.position.x = 0.05 + x * eyeMovement
-      rightEyeRef.current.position.z = 0.12 + y * eyeMovement
-    }
-  })
-
-  return (
-    <group ref={groupRef} position={position} scale={scale}>
-      {/* Head */}
-      <mesh ref={headRef} position={[0, 0.8, 0]}>
-        <sphereGeometry args={[0.15, 16, 16]} />
-        <meshStandardMaterial color="#ffffff" />
-      </mesh>
-
-      {/* Eyes */}
-      <mesh ref={leftEyeRef} position={[-0.05, 0.85, 0.12]}>
-        <sphereGeometry args={[0.02, 8, 8]} />
-        <meshStandardMaterial color="#000000" />
-      </mesh>
-      <mesh ref={rightEyeRef} position={[0.05, 0.85, 0.12]}>
-        <sphereGeometry args={[0.02, 8, 8]} />
-        <meshStandardMaterial color="#000000" />
-      </mesh>
-
-      {/* Smile */}
-      <mesh position={[0, 0.75, 0.12]}>
-        <torusGeometry args={[0.04, 0.01, 8, 16, Math.PI]} />
-        <meshStandardMaterial color="#000000" />
-      </mesh>
-
-      {/* Body */}
-      <mesh position={[0, 0.3, 0]}>
-        <cylinderGeometry args={[0.08, 0.08, 0.6, 8]} />
-        <meshStandardMaterial color="#ffffff" />
-      </mesh>
-
-      {/* Arms */}
-      <mesh ref={leftArmRef} position={[-0.15, 0.5, 0]} rotation={[0, 0, -0.7]}>
-        <cylinderGeometry args={[0.03, 0.03, 0.4, 8]} />
-        <meshStandardMaterial color="#ffffff" />
-      </mesh>
-      <mesh ref={rightArmRef} position={[0.15, 0.5, 0]} rotation={[0, 0, 0.7]}>
-        <cylinderGeometry args={[0.03, 0.03, 0.4, 8]} />
-        <meshStandardMaterial color="#ffffff" />
-      </mesh>
-
-      {/* Legs */}
-      <mesh position={[-0.08, -0.2, 0]} rotation={[0, 0, -0.1]}>
-        <cylinderGeometry args={[0.03, 0.03, 0.4, 8]} />
-        <meshStandardMaterial color="#ffffff" />
-      </mesh>
-      <mesh position={[0.08, -0.2, 0]} rotation={[0, 0, 0.1]}>
-        <cylinderGeometry args={[0.03, 0.03, 0.4, 8]} />
-        <meshStandardMaterial color="#ffffff" />
-      </mesh>
-
-      <Html position={[0.5, 1.2, 0]} center>
-        <div className="bg-white text-black px-2 py-1 rounded-lg shadow-lg text-xs max-w-[100px] relative">
-          My projects!
-          <div className="absolute -bottom-1 -left-1 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-white"></div>
-        </div>
-      </Html>
-    </group>
-  )
-}
-
-function ContactStickFigure({
-  position = [0, 0, 0],
-  scale = 1,
-}: {
-  position?: [number, number, number]
-  scale?: number
-}) {
-  const groupRef = useRef<THREE.Group>(null)
-  const leftArmRef = useRef<THREE.Mesh>(null)
-  const rightArmRef = useRef<THREE.Mesh>(null)
-  const headRef = useRef<THREE.Mesh>(null)
-  const leftEyeRef = useRef<THREE.Mesh>(null)
-  const rightEyeRef = useRef<THREE.Mesh>(null)
-
-  const { camera, gl } = useThree()
-  const mousePosition = useMousePosition()
-
-  useFrame((state) => {
-    if (groupRef.current) {
-      groupRef.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * 0.6) * 0.16
-    }
-
-    if (leftArmRef.current && rightArmRef.current) {
-      const wave = Math.sin(state.clock.elapsedTime * 3.5) * 0.6
-      leftArmRef.current.rotation.z = -0.4 + wave
-      rightArmRef.current.rotation.z = 0.4 - wave * 0.5
-      leftArmRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 2.8) * 0.2
-    }
-
-    if (headRef.current) {
-      headRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.9) * 0.25
-      headRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.7) * 0.1
-    }
-
-    if (leftEyeRef.current && rightEyeRef.current && groupRef.current) {
-      const rect = gl.domElement.getBoundingClientRect()
-      const x = ((mousePosition.x - rect.left) / rect.width) * 2 - 1
-      const y = -((mousePosition.y - rect.top) / rect.height) * 2 + 1
-
-      const eyeMovement = 0.08
-      leftEyeRef.current.position.x = -0.05 + x * eyeMovement
-      leftEyeRef.current.position.z = 0.12 + y * eyeMovement
-      rightEyeRef.current.position.x = 0.05 + x * eyeMovement
-      rightEyeRef.current.position.z = 0.12 + y * eyeMovement
-    }
-  })
-
-  return (
-    <group ref={groupRef} position={position} scale={scale}>
-      {/* Head */}
-      <mesh ref={headRef} position={[0, 0.8, 0]}>
-        <sphereGeometry args={[0.15, 16, 16]} />
-        <meshStandardMaterial color="#ffffff" />
-      </mesh>
-
-      {/* Eyes */}
-      <mesh ref={leftEyeRef} position={[-0.05, 0.85, 0.12]}>
-        <sphereGeometry args={[0.02, 8, 8]} />
-        <meshStandardMaterial color="#000000" />
-      </mesh>
-      <mesh ref={rightEyeRef} position={[0.05, 0.85, 0.12]}>
-        <sphereGeometry args={[0.02, 8, 8]} />
-        <meshStandardMaterial color="#000000" />
-      </mesh>
-
-      {/* Smile */}
-      <mesh position={[0, 0.75, 0.12]}>
-        <torusGeometry args={[0.04, 0.01, 8, 16, Math.PI]} />
-        <meshStandardMaterial color="#000000" />
-      </mesh>
-
-      {/* Body */}
-      <mesh position={[0, 0.3, 0]}>
-        <cylinderGeometry args={[0.08, 0.08, 0.6, 8]} />
-        <meshStandardMaterial color="#ffffff" />
-      </mesh>
-
-      {/* Arms */}
-      <mesh ref={leftArmRef} position={[-0.15, 0.5, 0]} rotation={[0, 0, -0.2]}>
-        <cylinderGeometry args={[0.03, 0.03, 0.4, 8]} />
-        <meshStandardMaterial color="#ffffff" />
-      </mesh>
-      <mesh ref={rightArmRef} position={[0.15, 0.5, 0]} rotation={[0, 0, 0.2]}>
-        <cylinderGeometry args={[0.03, 0.03, 0.4, 8]} />
-        <meshStandardMaterial color="#ffffff" />
-      </mesh>
-
-      {/* Legs */}
-      <mesh position={[-0.08, -0.2, 0]} rotation={[0, 0, -0.1]}>
-        <cylinderGeometry args={[0.03, 0.03, 0.4, 8]} />
-        <meshStandardMaterial color="#ffffff" />
-      </mesh>
-      <mesh position={[0.08, -0.2, 0]} rotation={[0, 0, 0.1]}>
-        <cylinderGeometry args={[0.03, 0.03, 0.4, 8]} />
-        <meshStandardMaterial color="#ffffff" />
-      </mesh>
-
-      <Html position={[0.5, 1.2, 0]} center>
-        <div className="bg-white text-black px-2 py-1 rounded-lg shadow-lg text-xs max-w-[90px] relative">
-          Let's connect!
-          <div className="absolute -bottom-1 -left-1 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-white"></div>
-        </div>
-      </Html>
-    </group>
+      </div>
+    </div>
   )
 }
 
 function ContactSection() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    message: "",
-  })
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log("Form submitted:", formData)
-    // Handle form submission here
-  }
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    })
-  }
-
   return (
-    <section id="contact" className="min-h-screen bg-black text-white py-20 relative">
-      <div className="container mx-auto px-6">
-        <div className="text-center mb-16">
-          <h2 className="text-5xl md:text-6xl font-bold mb-4 tracking-tight bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
-            Let's Connect
+    <section id="contact" className="relative min-h-screen scroll-mt-20 overflow-hidden bg-black py-16 text-white md:py-24">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute left-1/4 top-0 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 h-64 w-64 rounded-full bg-sky-500/10 blur-3xl" />
+      </div>
+
+      <div className="relative z-10 container mx-auto px-6">
+        <div className="mb-16 text-center">
+          <h2 className="mb-4 bg-gradient-to-r from-cyan-300 via-white to-cyan-400 bg-clip-text text-4xl font-bold tracking-tight text-transparent md:text-6xl">
+            Let&apos;s Connect
           </h2>
-          <p className="text-2xl text-muted-foreground font-light">Ready to collaborate on your next project?</p>
+          <p className="text-xl font-light text-zinc-300 md:text-2xl">
+            Ready to collaborate on your next project?
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 max-w-6xl mx-auto">
-          {/* Contact Info */}
-          <div className="space-y-8">
-            <h3 className="text-3xl font-bold mb-8">Get in Touch</h3>
+        <div className="mx-auto grid max-w-6xl grid-cols-1 items-stretch gap-8 lg:grid-cols-2 lg:gap-12">
+          <ContactInfoPanel className="min-h-[420px] lg:min-h-[520px]">
+            <div className="flex h-full flex-col justify-center p-8 md:p-10">
+              <h3 className="mb-8 text-3xl font-bold tracking-tight text-white">Get in Touch</h3>
 
-            <div className="space-y-6">
-              <div className="flex items-center space-x-4 p-6 bg-gray-900 rounded-xl hover:bg-gray-800 transition-all duration-300 hover:scale-105">
-                <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center">
-                  <Mail className="w-7 h-7 text-black" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-lg">Email</h4>
-                  <p className="text-gray-400">deveshs2015@gmail.com</p>
-                </div>
+              <div className="space-y-5">
+                <a
+                  href="mailto:deveshs2015@gmail.com"
+                  className="group flex items-center gap-4 rounded-xl border border-zinc-700/80 bg-black/50 p-5 transition-all duration-300 hover:border-cyan-500/30 hover:bg-black/70"
+                >
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-cyan-500/30 bg-cyan-500/10">
+                    <Mail className="h-5 w-5 text-cyan-400" />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-semibold text-white">Email</h4>
+                    <p className="text-zinc-300 transition-colors group-hover:text-cyan-200/90">
+                      deveshs2015@gmail.com
+                    </p>
+                  </div>
+                </a>
+
+                <a
+                  href="https://www.linkedin.com/in/devesh-singh-9998a6199"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center gap-4 rounded-xl border border-zinc-700/80 bg-black/50 p-5 transition-all duration-300 hover:border-cyan-500/30 hover:bg-black/70"
+                >
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-cyan-500/30 bg-cyan-500/10">
+                    <Linkedin className="h-5 w-5 text-cyan-400" />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-semibold text-white">LinkedIn</h4>
+                    <p className="text-zinc-300 transition-colors group-hover:text-cyan-200/90">
+                      Connect with me
+                    </p>
+                  </div>
+                </a>
               </div>
-
-              <div className="flex items-center space-x-4 p-6 bg-gray-900 rounded-xl hover:bg-gray-800 transition-all duration-300 hover:scale-105">
-                <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center">
-                  <Phone className="w-7 h-7 text-black" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-lg">Phone</h4>
-                  <p className="text-gray-400">(408) 569-6278</p>
-                </div>
-              </div>
-
-              <a
-                href="https://www.linkedin.com/in/devesh-singh-9998a6199"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center space-x-4 p-6 bg-gray-900 rounded-xl hover:bg-gray-800 transition-all duration-300 hover:scale-105"
-              >
-                <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center">
-                  <Linkedin className="w-7 h-7 text-black" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-lg">LinkedIn</h4>
-                  <p className="text-gray-400">Connect with me</p>
-                </div>
-              </a>
             </div>
+          </ContactInfoPanel>
 
-            <div className="relative h-64 mt-8">
-              <Canvas camera={{ position: [0, 0, 5], fov: 50 }} style={{ width: "100%", height: "100%" }}>
-                <ambientLight intensity={0.6} />
-                <pointLight position={[10, 10, 10]} intensity={0.8} />
-                <ContactStickFigure position={[0, 0, 0]} scale={1.2} />
-              </Canvas>
-            </div>
-          </div>
-
-          {/* Contact Form */}
-          <div className="bg-gray-900 p-8 rounded-xl border border-gray-800">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Your Name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="w-full p-4 bg-black border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:border-white focus:outline-none transition-colors"
-                  required
-                />
-              </div>
-              <div>
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Your Email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full p-4 bg-black border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:border-white focus:outline-none transition-colors"
-                  required
-                />
-              </div>
-              <div>
-                <textarea
-                  name="message"
-                  placeholder="Your Message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  rows={6}
-                  className="w-full p-4 bg-black border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:border-white focus:outline-none transition-colors resize-none"
-                  required
-                />
-                <div className="text-right text-sm text-gray-400 mt-2">{formData.message.length}/500</div>
-              </div>
-              <Button
-                type="submit"
-                size="lg"
-                className="w-full bg-white text-black hover:bg-gray-200 transition-colors font-semibold py-4"
-              >
-                Send Message
-              </Button>
-            </form>
-          </div>
+          <SectionGlassPanel variant="accent" className="min-h-[420px] lg:min-h-[520px]">
+            <SplineScene
+              scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
+              className="h-full min-h-[420px] w-full lg:min-h-[520px]"
+            />
+          </SectionGlassPanel>
         </div>
 
-        {/* Footer */}
-        <div className="text-center mt-20 pt-8 border-t border-gray-800">
-          <p className="text-gray-400">© 2024 Devesh Singh. Built with passion for technology and innovation 🚀</p>
+        <div className="mt-20 border-t border-zinc-700/50 pt-8 text-center">
+          <p className="text-zinc-400">
+            © 2024 Devesh Singh. Built with passion for technology and innovation
+          </p>
         </div>
       </div>
     </section>
@@ -1149,168 +367,126 @@ function ContactSection() {
 
 // Experience Section Component
 function FullExperienceSection() {
-  const experiences = [
-    {
-      title: "Instructional Student Assistant — Deep Learning",
-      company: "San José State University",
-      period: "Jan 2025 – Present",
-      location: "San José, CA",
-      achievements: [
-        "Supported students in CNN/Transformer labs by resolving conceptual and implementation questions across training pipelines, evaluation, and deployment",
-        "Led lab assistance for image classification tasks: dataset handling, training loops, tuning for accuracy, confusion-matrix/error analysis, and report-quality evaluation",
-        "Assisted super-resolution labs by debugging model input/output pipelines, loss selection, and quality validation",
-        "Configured and operationalized the Mobilint MLA100 NPU lab setup, enabling students to run optimized inference and understand accelerator constraints",
-        "Troubleshot NPU deployment issues including model compatibility, runtime errors, and performance bottlenecks; helped students achieve stable inference runs on MLA100",
-      ],
-      technologies: ["CNN", "Transformers", "NPU", "Mobilint MLA100", "Deep Learning", "Python", "PyTorch"],
-    },
-    {
-      title: "Software Development Intern",
-      company: "ASANTE Inc.",
-      period: "May 2025 – Aug 2025",
-      location: "Remote",
-      achievements: [
-        "Overcame Shopify Basic limitations by generating discount codes linked to Te-Credits and applying them automatically at checkout",
-        "Built the entire system using Admin API, Storefront API, and GraphQL, saving $2.3K/month in costs and cutting development time by 80%",
-        "Leveraged gRPC to develop high-efficiency APIs, cutting response times by 70% over REST-based implementations",
-      ],
-      technologies: ["Shopify", "GraphQL", "Admin API", "Storefront API", "gRPC"],
-    },
-    {
-      title: "System Engineer",
-      company: "Tata Consultancy Services",
-      period: "Oct 2021 – Jul 2024",
-      location: "India",
-      achievements: [
-        "Designed and optimized Angular-based UI for JLR's forecasting systems. Result: Increased engagement by 30%",
-        "Developed a region-specific predictive inventory model, resulting in reduced inventory costs by 18%",
-        "Utilized MongoDB for inventory analysis, identifying 13% surplus. Result: Reallocated 25% of resources efficiently",
-        "Facilitated cross-team collaboration through enhanced communication skills",
-      ],
-      technologies: ["Angular", "MongoDB", "Forecasting Models", "UI/UX Design"],
-    },
-  ]
+  const [activeIndex, setActiveIndex] = useState(0)
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null)
+  const galleryItems = EXPERIENCE_DATA.map(experienceToGalleryItem)
+  const angleStep = 360 / galleryItems.length
+  const rotation = -activeIndex * angleStep
+  const isExpanded = expandedIndex !== null
+
+  const goToPrevious = () => {
+    setActiveIndex((index) => (index - 1 + galleryItems.length) % galleryItems.length)
+  }
+
+  const goToNext = () => {
+    setActiveIndex((index) => (index + 1) % galleryItems.length)
+  }
+
+  const handleCardClick = (index: number) => {
+    setActiveIndex(index)
+    setExpandedIndex(index)
+  }
+
+  const handleBack = () => {
+    setExpandedIndex(null)
+  }
 
   return (
-    <section
-      id="experience"
-      className="min-h-screen py-20 bg-gradient-to-br from-background via-muted/10 to-background relative overflow-hidden"
-    >
-      {/* 3D Background */}
-      <div className="absolute inset-0 w-full h-full opacity-40">
-        <Canvas camera={{ position: [0, 0, 6], fov: 75 }}>
-          <Suspense fallback={null}>
-            <ambientLight intensity={0.4} />
-            <pointLight position={[5, 5, 5]} intensity={0.6} />
-            <ExperienceStickFigure position={[-4, 0, 0]} scale={1.5} />
-            <Environment preset="studio" />
-          </Suspense>
-        </Canvas>
+    <section id="experience" className="relative scroll-mt-20 overflow-visible bg-black pt-6 pb-12 md:pt-8 md:pb-16">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute left-1/4 top-0 h-48 w-48 rounded-full bg-cyan-500/10 blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 h-48 w-48 rounded-full bg-sky-500/10 blur-3xl" />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4">
-        {/* Section Header */}
-        <div className="text-center mb-20">
-          <h2 className="text-6xl md:text-7xl font-bold mb-6 tracking-tight bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
+      <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-6 text-center md:mb-8">
+          <h2 className="mb-2 bg-gradient-to-r from-cyan-300 via-white to-cyan-400 bg-clip-text text-4xl font-bold tracking-tight text-transparent md:text-5xl">
             Experience
           </h2>
-          <p className="text-2xl text-muted-foreground font-light">My professional journey through innovation</p>
+          <p className="text-sm font-light text-neutral-400 md:text-base">
+            {isExpanded
+              ? "Expanded role details"
+              : `Use arrows to browse roles · ${activeIndex + 1} of ${galleryItems.length}`}
+          </p>
         </div>
 
-        {/* Modern Timeline */}
-        <div className="relative max-w-5xl mx-auto">
-          {experiences.map((exp, index) => (
-            <div key={index} className="relative mb-20 last:mb-0">
-              {/* Experience Card */}
-              <div className="group">
-                <div className="bg-card/80 backdrop-blur-xl rounded-3xl p-10 border border-border/50 shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:scale-[1.02] hover:border-primary/30">
-                  {/* Header Section */}
-                  <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
-                    <div className="mb-4 md:mb-0">
-                      <h3 className="text-3xl font-bold mb-2 group-hover:text-primary transition-colors duration-300">
-                        {exp.title}
-                      </h3>
-                      <div className="flex items-center gap-3 text-xl text-primary font-semibold mb-2">
-                        <div className="w-3 h-3 bg-primary rounded-full animate-pulse"></div>
-                        <span>{exp.company}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <Calendar className="h-5 w-5" />
-                        <span className="text-lg">{exp.period}</span>
-                      </div>
-                    </div>
+        <div
+          className={cn(
+            "relative mx-auto max-w-4xl overflow-visible transition-all duration-500",
+            isExpanded ? "min-h-[520px] md:min-h-[560px]" : "h-[420px] sm:h-[460px] md:h-[500px]",
+          )}
+        >
+          <AnimatePresence mode="wait" initial={false}>
+            {isExpanded ? (
+              <motion.div
+                key={`expanded-${expandedIndex}`}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 8 }}
+                transition={{ duration: 0.3 }}
+              >
+                <ExpandedExperienceCard
+                  experience={EXPERIENCE_DATA[expandedIndex!]}
+                  onBack={handleBack}
+                />
+              </motion.div>
+            ) : (
+              <div key="gallery" className="relative h-full w-full overflow-visible">
+                <CircularGallery
+                  items={galleryItems}
+                  radius={320}
+                  rotation={rotation}
+                  animate
+                  scrollDriven={false}
+                  onItemClick={handleCardClick}
+                  className="h-full"
+                />
 
-                    {/* Timeline Indicator */}
-                    <div className="hidden md:flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full border-4 border-primary/20 group-hover:border-primary/50 transition-all duration-300">
-                      <div className="w-6 h-6 bg-primary rounded-full group-hover:scale-125 transition-transform duration-300"></div>
-                    </div>
-                  </div>
+                <button
+                  type="button"
+                  aria-label="Previous experience"
+                  onClick={goToPrevious}
+                  className="absolute left-0 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-cyan-500/40 bg-black/80 text-cyan-400 shadow-[0_0_16px_rgba(34,211,238,0.2)] transition-all hover:border-cyan-400 hover:bg-cyan-500/10 hover:text-white md:left-2 md:h-12 md:w-12"
+                >
+                  <ChevronLeft className="h-5 w-5 md:h-6 md:w-6" />
+                </button>
 
-                  {/* Achievements Grid */}
-                  <div className="mb-8">
-                    <h4 className="text-lg font-semibold mb-4 text-muted-foreground">Key Achievements</h4>
-                    <div className="grid gap-4">
-                      {exp.achievements.map((achievement, achIndex) => (
-                        <div
-                          key={achIndex}
-                          className="flex items-start gap-4 p-4 bg-muted/20 rounded-xl hover:bg-muted/30 transition-colors duration-300"
-                        >
-                          <div className="w-2 h-2 bg-primary rounded-full mt-3 flex-shrink-0 animate-pulse"></div>
-                          <span className="text-foreground/90 leading-relaxed text-lg">{achievement}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                <button
+                  type="button"
+                  aria-label="Next experience"
+                  onClick={goToNext}
+                  className="absolute right-0 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-cyan-500/40 bg-black/80 text-cyan-400 shadow-[0_0_16px_rgba(34,211,238,0.2)] transition-all hover:border-cyan-400 hover:bg-cyan-500/10 hover:text-white md:right-2 md:h-12 md:w-12"
+                >
+                  <ChevronRight className="h-5 w-5 md:h-6 md:w-6" />
+                </button>
 
-                  {/* Technologies */}
-                  <div>
-                    <h4 className="text-lg font-semibold mb-4 text-muted-foreground">Technologies Used</h4>
-                    <div className="flex flex-wrap gap-3">
-                      {exp.technologies.map((tech, techIndex) => (
-                        <span
-                          key={techIndex}
-                          className="px-4 py-2 bg-primary/10 text-primary text-base font-medium rounded-full border border-primary/20 hover:bg-primary hover:text-primary-foreground transition-all duration-300 cursor-default"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
+                <div className="absolute bottom-0 left-1/2 z-20 flex -translate-x-1/2 gap-2">
+                  {galleryItems.map((_, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      aria-label={`Go to experience ${index + 1}`}
+                      onClick={() => setActiveIndex(index)}
+                      className={cn(
+                        "h-2 rounded-full transition-all duration-300",
+                        activeIndex === index
+                          ? "w-6 bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.8)]"
+                          : "w-2 bg-cyan-500/30 hover:bg-cyan-500/60",
+                      )}
+                    />
+                  ))}
                 </div>
               </div>
-
-              {/* Connecting Line */}
-              {index < experiences.length - 1 && (
-                <div className="flex justify-center my-12">
-                  <div className="w-px h-16 bg-gradient-to-b from-primary/50 to-transparent"></div>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-
-        {/* Enhanced Call to Action */}
-        <div className="text-center mt-20">
-          <Button
-            size="lg"
-            className="text-xl px-12 py-6 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-1"
-            onClick={() => document.getElementById("skills")?.scrollIntoView({ behavior: "smooth" })}
-          >
-            Explore My Skills →
-          </Button>
+            )}
+          </AnimatePresence>
         </div>
       </div>
-
-      {/* Enhanced Background Effects */}
-      <div className="absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-background/20 pointer-events-none"></div>
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse"></div>
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
     </section>
   )
 }
 
 export default function HomePage() {
-  const [activeSection, setActiveSection] = useState("hero")
+  const [activeSection, setActiveSection] = useState("home")
 
   return (
     <div className="min-h-screen bg-background text-foreground">

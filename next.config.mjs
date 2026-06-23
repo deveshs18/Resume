@@ -1,10 +1,18 @@
 /** @type {import('next').NextConfig} */
 
-const repoName = 'Resume'; // GitHub repo name
+const repoName = "Resume"
+const isGithubPages = process.env.GITHUB_PAGES === "true"
+const basePath = isGithubPages ? `/${repoName}` : ""
+
 const nextConfig = {
-  output: 'export',
-  basePath: `/${repoName}`,
-  assetPrefix: `/${repoName}/`,
+  output: "export",
+  env: {
+    NEXT_PUBLIC_BASE_PATH: basePath,
+  },
+  ...(isGithubPages && {
+    basePath,
+    assetPrefix: `${basePath}/`,
+  }),
   eslint: {
     ignoreDuringBuilds: true,
   },
